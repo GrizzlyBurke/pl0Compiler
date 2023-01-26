@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.18 2023/01/24 13:42:50 leavens Exp leavens $
+# $Id: Makefile,v 1.18 2023/01/24 13:42:50 leavens Exp leaven
 # Makefile for P-machine
 
 CC = gcc
