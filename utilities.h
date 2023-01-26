@@ -1,0 +1,16 @@
+#define MAX_STACK_HEIGHT 2048
+#define MAX_CODE_LENGTH 512
+#define LIT 1
+#define RTN 2
+#define CAL 3
+#define POP 4
+#define PSI 5
+#define PRM 6
+#define STO 7
+#define INC 8
+#define JMP 9
+#define JPC 10
+#define CHO 11
+#define CHI 12
+#define HLT 13
+#define NDB 14

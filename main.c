@@ -1,35 +1,32 @@
 #include <stdio.h>
 #include<stdlib.h>
+#include "utilities.h"
 
-#define MAX_STACK_HEIGHT 2048
-#define MAX_CODE_LENGTH 512
-#define LIT 1
-#define RTN 2
-#define CAL 3
-#define POP 4
-#define PSI 5
-#define PRM 6
-#define STO 7
-#define INC 8
-#define JMP 9
-#define JPC 10
-#define CHO 11
-#define CHI 12
-#define HLT 13
-#define NDB 14
+typedef struct Stack
+{
+    int * data;
+}Stack;
 
-int stack[MAX_STACK_HEIGHT];
-int code[MAX_CODE_LENGTH];
+void init_stack(struct Stack * s);
 
-int main(int argc, char *argv[]) {
-    if (argc != 2) {
+int main(int argc, char *argv[]) 
+{
+    int code[MAX_CODE_LENGTH];
+    int BP = 0, SP = 0, PC = 0;
+
+    //create and initilize the stack
+    struct Stack * stack;
+    innit_stack(stack);
+
+    if (argc != 2) 
+    {
         printf("Error: Invalid number of arguments.\n");
         return 1;
     }
-    char *filename = argv[1];
+    char * filename = argv[1];
 
     // read the file and load the code into the code array
-    FILE *fp = fopen(filename, "r");
+    FILE * fp = fopen(filename, "r");
 
     if (!fp) 
     {
@@ -41,4 +38,9 @@ int main(int argc, char *argv[]) {
         i++;
     }
     fclose(fp);
+}
+
+void init_stack(struct Stack * s)
+{
+    s->data = calloc(MAX_STACK_HEIGHT, sizeof(int));   
 }
