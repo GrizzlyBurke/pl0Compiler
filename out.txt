@@ -4,7 +4,9 @@ ADR	 OP	 m
 Tracing...
 PC: 0 BP: 0 SP: 0
 stack: 
+==> addr: 0	 INC	 2
 PC: 1 BP: 0 SP: 2
 stack: s[0]: 0 s[1]: 0 
+==> addr: 1	 HLT	 0
 PC: 2 BP: 0 SP: 2
 stack: s[0]: 0 s[1]: 0 
