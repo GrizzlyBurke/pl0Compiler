@@ -7,16 +7,23 @@ typedef struct Stack
     int * data;
 }Stack;
 
+typedef struct instruction
+{
+    int opcode;
+    int m;
+}instruction;
+
 void init_stack(struct Stack * s);
+void printInstructions(instruction * code, int count);
 
 int main(int argc, char *argv[]) 
 {
-    int code[MAX_CODE_LENGTH];
+    instruction code[MAX_CODE_LENGTH];
     int BP = 0, SP = 0, PC = 0;
 
     //create and initilize the stack
-    struct Stack * stack;
-    innit_stack(stack);
+    //struct Stack * stack;
+    //init_stack(stack);
 
     if (argc != 2) 
     {
@@ -28,17 +35,20 @@ int main(int argc, char *argv[])
     // read the file and load the code into the code array
     FILE * fp = fopen(filename, "r");
 
-    if (!fp) 
+    if (fp == NULL) 
     {
         printf("Error: Failed to open file %s.\n", filename);
         return 1;
     }
     int i = 0;
-    while(fscanf(fp, "%d", &code[i]) != EOF) {
+    while(fscanf(fp, "%d %d", &code[i].opcode, &code[i].m) != EOF) 
+    {
         i++;
     }
     fclose(fp);
 
+    printInstructions(code, i);
+/*
     while (code[PC] != 13) 
     {
 
@@ -175,6 +185,7 @@ int main(int argc, char *argv[])
         }
         PC++;
     }
+    */
 }
 
 void init_stack(struct Stack * s)
@@ -187,5 +198,14 @@ void init_stack(struct Stack * s)
     {
         printf("Error: failed to allocate memory for the stack\n");
         exit(1);
+    }
+}
+
+void printInstructions(instruction * code, int count)
+{
+    printf("ADR\t OP\t m\n");
+    for (int i = 0; i < count; i++ )
+    {
+        printf("%d\t %d\t %d\n", i, code[i].opcode, code[i].m);
     }
 }

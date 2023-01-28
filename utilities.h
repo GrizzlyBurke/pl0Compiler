@@ -14,3 +14,16 @@
 #define CHI 12
 #define HLT 13
 #define NDB 14
+#define NEG 15
+#define ADD 16
+#define SUB 17
+#define MUL 18
+#define DIV 19
+#define MOD 20
+#define EQL 21
+#define NEQ 22
+#define LSS 23
+#define LEQ 24
+#define GTR 25
+#define GEQ 26
+#define PSP 27
