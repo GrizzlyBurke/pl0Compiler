@@ -110,6 +110,65 @@ int main(int argc, char *argv[])
             case 14: // NDB
                 // stop printing debugging output
                 break;
+            case 15: // NEG
+                stack->data[SP - 1] = -stack->data[SP - 1];
+                break;
+            case 16: // ADD
+                stack->data[SP - 2] = stack->data[SP - 1] + stack->data[SP - 2];
+                SP -= 1;
+                break;
+            case 17: // SUB
+                stack->data[SP - 2] = stack->data[SP - 1] - stack->data[SP - 2];
+                SP -= 1;
+                break;
+            case 18: // MUL
+                stack->data[SP - 2] = stack->data[SP - 1] * stack->data[SP - 2];
+                SP -= 1;
+                break;
+            case 19:  // DIV
+                if(stack->data[SP-2] == 0){
+                    fprintf(stderr, "Error: Division by zero\n");
+                    exit(EXIT_FAILURE);
+                }
+                stack->data[SP-2] = stack->data[SP-1] / stack->data[SP-2];
+                SP--;
+                break;
+            case 20:  // MOD
+                if(stack->data[SP-2] == 0){
+                    fprintf(stderr, "Error: Division by zero\n");
+                    exit(EXIT_FAILURE);
+                }
+                stack->data[SP-2] = stack->data[SP-1] % stack->data[SP-2];
+                SP--;
+                break;
+            case 21: // EQL
+                stack->data[SP - 2] = stack->data[SP - 1] == stack->data[SP - 2] ? 1 : 0;
+                SP -= 1;
+                break;
+            case 22: // NEQ
+                stack->data[SP - 2] = stack->data[SP - 1] != stack->data[SP - 2] ? 1 : 0;
+                SP -= 1;
+                break;
+            case 23: // LSS
+                stack->data[SP - 2] = stack->data[SP - 1] < stack->data[SP - 2] ? 1 : 0;
+                SP -= 1;
+                break;
+            case 24: // LEQ
+                stack->data[SP - 2] = stack->data[SP - 1] <= stack->data[SP - 2] ? 1 : 0;
+                SP -= 1;
+                break;
+            case 25: // GTR
+                stack->data[SP - 2] = stack->data[SP - 1] > stack->data[SP - 2] ? 1 : 0;
+                SP -= 1;
+                break;
+            case 26: // GEQ
+                stack->data[SP - 2] = stack->data[SP - 1] >= stack->data[SP - 2] ? 1 : 0;
+                SP -= 1;
+                break;
+            case 27: // PSP
+                stack->data[SP] = SP;
+                SP += 1;
+                break;
             default:
                 printf("Error: Invalid instruction %d at PC = %d\n", code[PC], PC);
                 return 1;
