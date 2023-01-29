@@ -22,8 +22,8 @@ int main(int argc, char *argv[])
     int BP = 0, SP = 0, PC = 0;
 
     //create and initilize the stack
-    //struct Stack * stack;
-    //init_stack(stack);
+    struct Stack * stack;
+    init_stack(stack);
 
     if (argc != 2) 
     {
@@ -48,8 +48,8 @@ int main(int argc, char *argv[])
     fclose(fp);
 
     printInstructions(code, i);
-/*
-    while (code[PC] != 13) 
+
+    while (code[PC].opcode != 13) 
     {
 
             if (SP >= MAX_STACK_HEIGHT) {
@@ -61,10 +61,10 @@ int main(int argc, char *argv[])
             return 1;
             }
 
-            switch (code[PC]) {
+            switch (code[PC].opcode) {
             case 1: // LIT
                 SP++;
-                stack->data[SP] = code[PC + 1];
+                stack->data[SP] = code[PC + 1].m;
                 PC++;
                 break;
             case 2: // RTN
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
                 stack->data[SP + 1] = BP;
                 stack->data[SP + 2] = PC;
                 BP = SP + 2;
-                PC = code[PC + 1];
+                PC = code[PC + 1].m;
                 break;
             case 4: // POP
                 SP--;
@@ -86,16 +86,16 @@ int main(int argc, char *argv[])
                 break;
             case 6: // PRM
                 SP++;
-                stack->data[SP] = stack->data[BP - code[PC + 1]];
+                stack->data[SP] = stack->data[BP - code[PC + 1].m];
                 PC++;
                 break;
             case 7: // STO
-                stack->data[stack->data[SP - 1] + code[PC + 1]] = stack->data[SP - 2];
+                stack->data[stack->data[SP - 1] + code[PC + 1].m] = stack->data[SP - 2];
                 SP -= 2;
                 PC++;
                 break;
             case 8: // INC
-                SP += code[PC + 1];
+                SP += code[PC + 1].m;
                 PC++;
                 break;
             case 9: // JMP
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
                 break;
             case 10: // JPC
                 if (stack->data[SP - 1] != 0) {
-                    PC = code[PC + 1];
+                    PC = code[PC + 1].m;
                 }
                 SP--;
                 PC++;
@@ -180,17 +180,18 @@ int main(int argc, char *argv[])
                 SP += 1;
                 break;
             default:
-                printf("Error: Invalid instruction %d at PC = %d\n", code[PC], PC);
+                printf("Error: Invalid instruction %d at PC = %d\n", code[PC].opcode, PC);
                 return 1;
         }
         PC++;
     }
-    */
+    
 }
 
 void init_stack(struct Stack * s)
 {
     //all values are initilzied to 0
+    s = malloc(sizeof(struct Stack));
     s->data = calloc(MAX_STACK_HEIGHT, sizeof(int));   
 
     //checks the return of calloc, if allocation has been done correctly
