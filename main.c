@@ -42,14 +42,14 @@ int main(int argc, char *argv[])
 
     while (1) 
     {
-        printStack(stack, SP, NDB);
+        printStack(stack, BP, SP, NDB);
 
             if (SP >= MAX_STACK_HEIGHT) {
                 printf("Error: stack overflow\n");
             return 1;
             }
             if (SP < BP) {
-                printf("Trying to pop and empty stack!\n");
+                printf("Trying to pop an empty stack!\n");
             return 1;
             }
 
@@ -62,16 +62,22 @@ int main(int argc, char *argv[])
                 break;
             case 2: // RTN
                 printInstruction(PC, code[PC].opcode, code[PC].m, NDB);                
-                SP = BP - 1;
-                PC = stack[SP + 3];
-                BP = stack[SP + 2];
+                PC = stack[SP - 1];
+                if (PC < 0)
+                {
+                    printf("Trying to pop an empty stack!\n");
+                    exit(1);
+                }
+                BP = stack[SP - 2];
+                SP = SP - 2;
                 break;
             case 3: // CAL
                 printInstruction(PC, code[PC].opcode, code[PC].m, NDB); 
-                stack[SP + 1] = BP;
-                stack[SP + 2] = PC;
-                BP = SP + 2;
-                PC = code[PC + 1].m;
+                stack[SP] = BP;
+                stack[SP + 1] = PC + 1;
+                BP = SP;
+                SP +=2;
+                PC = code[PC].m;
                 break;
             case 4: // POP
                 printInstruction(PC, code[PC].opcode, code[PC].m, NDB); 
@@ -84,8 +90,8 @@ int main(int argc, char *argv[])
                 break;
             case 6: // PRM
                 printInstruction(PC, code[PC].opcode, code[PC].m, NDB); 
+                stack[SP] = stack[BP - code[PC].m];
                 SP++;
-                stack[SP] = stack[BP - code[PC + 1].m];
                 PC++;
                 break;
             case 7: // STO
@@ -240,11 +246,11 @@ int main(int argc, char *argv[])
             
         if(code[PC].opcode == 13)
             {
-                printStack(stack, SP, NDB);
+                printStack(stack, BP, SP, NDB);
                 printInstruction(PC, code[PC].opcode, code[PC].m, NDB);
                 PC++;
                 printPointers(BP, SP, PC, NDB);
-                printStack(stack, SP, NDB);
+                printStack(stack, BP, SP, NDB);
                 break;
             }
     }

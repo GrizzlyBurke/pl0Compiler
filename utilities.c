@@ -12,7 +12,7 @@ typedef struct instruction
 void initStack(int * stack);
 void printCode(instruction * code, int count);
 void printPointers( int BP, int SP, int PC,int NDB);
-void printStack(int * stack, int SP, int NDB);
+void printStack(int * stack, int BP, int SP, int NDB);
 void printInstruction(int PC, int OP, int M, int NDB);
 
 void initStack(int * stack)
@@ -35,10 +35,10 @@ void printCode(instruction * code, int count)
         "NEQ", "LSS", "LEQ", "GTR", "GEQ", "PSP",
     
     };
-    printf("Addr   OP    M\n");
+    printf("Addr  OP    M\n");
     for (int i = 0; i < count; i++ )
     {
-        printf("%-7d%-6s%d\n", i, codes[code[i].opcode - 1], code[i].m);
+        printf("%-6d%-6s%d\n", i, codes[code[i].opcode - 1], code[i].m);
     }
 }
 
@@ -50,12 +50,12 @@ void printPointers(int BP, int SP, int PC, int NDB)
     }
 }
 
-void printStack(int * stack, int SP, int NDB)
+void printStack(int * stack, int BP, int SP, int NDB)
 {
     if(NDB == 0)
     {
         printf("stack: ");
-        for (int i = 0; i < SP; i++)
+        for (int i = BP; i < SP; i++)
         {
             printf("S[%d]: %d ", i, stack[i]);
         }
