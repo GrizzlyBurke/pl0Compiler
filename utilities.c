@@ -111,7 +111,6 @@ void printInstruction(int PC, int OP, int M, int NDB)
                 break;
             case 14:
                 printf("==> addr: %d     NDB   %d\n", PC, M);
-                printf("N\n");
                 break;
             case 15:
                 printf("==> addr: %d     NEG   %d\n", PC, M);

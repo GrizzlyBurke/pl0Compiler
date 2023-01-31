@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
             return 1;
             }
             if (SP < BP) {
-                printf("Error: stack underflow\n");
+                printf("Trying to pop and empty stack!\n");
             return 1;
             }
 
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
                 break;
             case 11: // CHO
                 printInstruction(PC, code[PC].opcode, code[PC].m, NDB); 
-                fprintf(stderr, "%c", stack[SP - 1]);
+                fprintf(stdout, "%c", stack[SP - 1]);
                 SP--;
                 PC++;
                 break;
@@ -143,44 +143,50 @@ int main(int argc, char *argv[])
             case 16: // ADD
                 printInstruction(PC, code[PC].opcode, code[PC].m, NDB); 
                 stack[SP - 2] = stack[SP - 1] + stack[SP - 2];
+                stack[SP - 1] = 0;
                 SP -= 1;
                 PC++;
                 break;
             case 17: // SUB
                 printInstruction(PC, code[PC].opcode, code[PC].m, NDB); 
                 stack[SP - 2] = stack[SP - 1] - stack[SP - 2];
+                stack[SP - 1] = 0;
                 SP -= 1;
                 PC++;
                 break;
             case 18: // MUL
                 printInstruction(PC, code[PC].opcode, code[PC].m, NDB); 
                 stack[SP - 2] = stack[SP - 1] * stack[SP - 2];
+                stack[SP - 1] = 0;
                 SP -= 1;
                 PC++;
                 break;
             case 19:  // DIV
                 printInstruction(PC, code[PC].opcode, code[PC].m, NDB); 
                 if(stack[SP-2] == 0){
-                    fprintf(stderr, "Error: Division by zero\n");
+                    fprintf(stdout, "Divisor is zero in DIV instruction!\n");
                     exit(EXIT_FAILURE);
                 }
                 stack[SP-2] = stack[SP-1] / stack[SP-2];
+                stack[SP - 1] = 0;
                 SP--;
                 PC++;
                 break;
             case 20:  // MOD
                 printInstruction(PC, code[PC].opcode, code[PC].m, NDB); 
                 if(stack[SP-2] == 0){
-                    fprintf(stderr, "Error: Division by zero\n");
+                    fprintf(stdout, "Modulus is zero in MOD instruction!\n");
                     exit(EXIT_FAILURE);
                 }
                 stack[SP-2] = stack[SP-1] % stack[SP-2];
+                stack[SP - 1] = 0;
                 SP--;
                 PC++;
                 break;
             case 21: // EQL
                 printInstruction(PC, code[PC].opcode, code[PC].m, NDB); 
                 stack[SP - 2] = stack[SP - 1] == stack[SP - 2] ? 1 : 0;
+                stack[SP - 1] = 0;
                 SP -= 1;
                 PC++;
                 break;
@@ -194,24 +200,28 @@ int main(int argc, char *argv[])
             case 23: // LSS
                 printInstruction(PC, code[PC].opcode, code[PC].m, NDB); 
                 stack[SP - 2] = stack[SP - 1] < stack[SP - 2] ? 1 : 0;
+                stack[SP - 1] = 0;
                 SP -= 1;
                 PC++;
                 break;
             case 24: // LEQ
                 printInstruction(PC, code[PC].opcode, code[PC].m, NDB); 
                 stack[SP - 2] = stack[SP - 1] <= stack[SP - 2] ? 1 : 0;
+                stack[SP - 1] = 0;
                 SP -= 1;
                 PC++;
                 break;
             case 25: // GTR
                 printInstruction(PC, code[PC].opcode, code[PC].m, NDB); 
                 stack[SP - 2] = stack[SP - 1] > stack[SP - 2] ? 1 : 0;
+                stack[SP - 1] = 0;
                 SP -= 1;
                 PC++;
                 break;
             case 26: // GEQ
                 printInstruction(PC, code[PC].opcode, code[PC].m, NDB); 
                 stack[SP - 2] = stack[SP - 1] >= stack[SP - 2] ? 1 : 0;
+                stack[SP - 1] = 0;
                 SP -= 1;
                 PC++;
                 break;
