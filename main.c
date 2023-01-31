@@ -14,15 +14,11 @@ typedef struct instruction
     int m;
 }instruction;
 
-
-
 void initStack(int * stack);
 void printCode(instruction * code, int count);
 void printPointers( int BP, int SP, int PC,int NDB);
 void printStack(int * stack, int BP, int SP, int NDB);
 void printInstruction(int PC, int OP, int M, int NDB);
-
-
 
 int main(int argc, char *argv[]) 
 {
@@ -137,7 +133,7 @@ int main(int argc, char *argv[])
                 }
                 else
                     PC++;
-                    SP--;
+                SP--;
                 break;
             case 11: // CHO
                 printInstruction(PC, code[PC].opcode, code[PC].m, NDB); 
@@ -290,7 +286,6 @@ void initStack(int * stack)
 // printing instruction set from file
 void printCode(instruction * code, int count)
 {
-    int maxWidth = 8;
     char codes[][4] = 
     {
         "LIT", "RTN", "CAL", "POP", "PSI", "PRM", "STO",
