@@ -4,8 +4,11 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <limits.h>
+#include<string.h>
+#include<stdlib.h>
 #include "lexer.h"
 #include "token.h"
+#include "lexer_output.h"
 #include "utilities.h"
 
 
@@ -113,12 +116,14 @@ bool lexer_done()
     char check = fgetc(filePtr);
     if ( check == EOF || filePtr == NULL )
     {
-        lexer_close();
+        new_token.typ = 33;
+        new_token.column = lexer_column();
+        new_token.line = lexer_line();
         return true;
     }
     else
     {
-        fputc(check, filePtr);
+        unputc(check, stdin);
         return false;
     }
 }
@@ -127,82 +132,87 @@ bool lexer_done()
 // checks isalpha, isdigit, ispunct with various sub cases
 token lexer_next()
 {   
-char * curr_string = read_string(filePtr);
+    char * curr_string = read_string(filePtr);
 
     if(isalpha(curr_string[0])) 
     {
-    if (strcmp(curr_string, "const") == 0) { 
-            new_token.typ = 1;
-    }  
-    else if (strcmp(curr_string, "var") == 0) {
-            new_token.typ = 4;
-        } 
-    else if (strcmp(curr_string, "procedure") == 0) {
-            new_token.typ = 5;
-        } 
-    else if (strcmp(curr_string, "call") == 0) {
-            new_token.typ = 7;
-        } 
-    else if (strcmp(curr_string, "begin") == 0) {
-            new_token.typ = 8;
-        } 
-    else if (strcmp(curr_string, "end") == 0) {
-            new_token.typ = 9;
-        } 
-    else if (strcmp(curr_string, "if") == 0) {
-            new_token.typ = 10;
-        } 
-    else if (strcmp(curr_string, "then") == 0) {
-            new_token.typ = 11;
-        } 
-    else if (strcmp(curr_string, "else") == 0) {
-            new_token.typ = 12;
-        } 
-    else if (strcmp(curr_string, "while") == 0) {
-            new_token.typ = 13;
-        } 
-    else if (strcmp(curr_string, "do") == 0) {
-            new_token.typ = 14;
-        } 
-    else if (strcmp(curr_string, "read") == 0) {
-            new_token.typ = 15;
-        } 
-    else if (strcmp(curr_string, "write") == 0) {
-            new_token.typ = 16;
-        } 
-    else if (strcmp(curr_string, "skip") == 0) {
-            new_token.typ = 17;
-        } 
-    else if (strcmp(curr_string, "odd") == 0) {
-            new_token.typ = 18;
-        } 
-    //if its an alpha char but not a reserved word, it must be an indentifier.
-    else {
-            new_token.typ = 21;
-            strcpy(new_token.text, curr_string);
-        }
+        new_token.text = NULL;
+        new_token.filename = lexer_filename();
+        new_token.column = lexer_column();
+        new_token.line = lexer_line();
+
+        if
+
+
+        if (strcmp(curr_string, "const") == 0) { 
+                new_token.typ = 1;
+        }  
+        else if (strcmp(curr_string, "var") == 0) {
+                new_token.typ = 4;
+            } 
+        else if (strcmp(curr_string, "procedure") == 0) {
+                new_token.typ = 5;
+            } 
+        else if (strcmp(curr_string, "call") == 0) {
+                new_token.typ = 7;
+            } 
+        else if (strcmp(curr_string, "begin") == 0) {
+                new_token.typ = 8;
+            } 
+        else if (strcmp(curr_string, "end") == 0) {
+                new_token.typ = 9;
+            } 
+        else if (strcmp(curr_string, "if") == 0) {
+                new_token.typ = 10;
+            } 
+        else if (strcmp(curr_string, "then") == 0) {
+                new_token.typ = 11;
+            } 
+        else if (strcmp(curr_string, "else") == 0) {
+                new_token.typ = 12;
+            } 
+        else if (strcmp(curr_string, "while") == 0) {
+                new_token.typ = 13;
+            } 
+        else if (strcmp(curr_string, "do") == 0) {
+                new_token.typ = 14;
+            } 
+        else if (strcmp(curr_string, "read") == 0) {
+                new_token.typ = 15;
+            } 
+        else if (strcmp(curr_string, "write") == 0) {
+                new_token.typ = 16;
+            } 
+        else if (strcmp(curr_string, "skip") == 0) {
+                new_token.typ = 17;
+            } 
+        else if (strcmp(curr_string, "odd") == 0) {
+                new_token.typ = 18;
+            } 
+        //if its an alpha char but not a reserved word, it must be an indentifier.
+        else {
+                new_token.typ = 21;
+                new_token.text = realloc(new_token.text, (sizeof(char) * strlen(curr_string)));
+                strcpy(new_token.text, curr_string);
+            }
     }  
     if(isdigit(curr_string[0]))
     {
         short converter = (short) strtol(curr_string, NULL, 10);
         if(is_valid_short(converter))
             new_token.typ = 22;
+            new_token.value = converter;
     }
     if(ispunct(curr_string[0]))
-    {
-        if(ispunct(fgetc(filePtr)) != 0) 
-        {
-            ungetc(filePtr, stdin);
-        
-            if(strcmp(curr_string, "<>") == 0) {
-                new_token.typ = 24;
-            }
-            if(strcmp(curr_string, "<=") == 0) {
-                new_token.typ == 26;
-            }
-            if(strcmp(curr_string, ">=") == 0) {
-                new_token.typ = 28;
-            }
+    {        
+        if(strcmp(curr_string, "<>") == 0) {
+            new_token.typ = 24;
+        }
+        else if(strcmp(curr_string, "<=") == 0) {
+            new_token.typ == 26;
+        }
+        else if(strcmp(curr_string, ">=") == 0) {
+            new_token.typ = 28;
         }
          else if(strcmp(curr_string, "<") == 0) {
             new_token.typ = 25;
@@ -229,6 +239,7 @@ char * curr_string = read_string(filePtr);
                 fprintf(stderr, "Err: Illegal token format...\n");
         }
     }
+
             /*
              -> ispunct() -> check next char with fgetc() -> if single, fputc() back into stream
             \                                              \
