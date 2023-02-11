@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.9 2023/02/10 02:04:12 leavens Exp leavens $
+# $Id: Makefile,v 1.10 2023/02/12 18:02:46 leavens Exp leavens $
 # Makefile for lexer in COP 3402
 
 TARGET = lexer
@@ -29,7 +29,7 @@ clean:
 %.out: %.pl0 $(TARGET)
 	./$(TARGET) $< > $@ 2>&1
 
-%.myo: %.txt $(TARGET)
+%.myo: %.pl0 $(TARGET)
 	./$(TARGET) $< > $@ 2>&1
 
 check-outputs: $(TARGET) hw2-*test*.pl0
