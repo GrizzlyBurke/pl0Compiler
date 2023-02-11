@@ -69,6 +69,7 @@ char * string_builder()
         i++;
         c = fgetc(filePtr);
         
+        
     }
     if(c == '\n')
     {
@@ -264,9 +265,7 @@ token lexer_next()
     }
     if(ispunct(c) != 0)
     {       
-        new_token.column = lexer_column();
-        new_token.line = lexer_line();
-        new_token.filename = fname;
+        
 
          if(c == '<') {
 
@@ -370,6 +369,9 @@ token lexer_next()
         else {
             fprintf(stderr, "Err: Illegal token format...\n");
         }
+        new_token.column = lexer_column();
+        new_token.line = lexer_line();
+        new_token.filename = fname;
         return new_token;
     }
     if ((int)c == EOF)
