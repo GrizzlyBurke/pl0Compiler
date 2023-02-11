@@ -12,6 +12,7 @@
 // global variables for each function in lexer
 static const char * fname;
 static const FILE * filePtr;
+static token new_token;
 unsigned int row, col;
 
 int main(int argc, char * argv[])
@@ -129,45 +130,53 @@ token lexer_next()
     char * curr_string = read_string(filePtr);
     if(isAlpha(curr_string[0]))
     {
-            if (strcmp(input, ".") == 0) {
-                printf("input is equal to 'periodsym'\n");
-            } else if (strcmp(input, "const") == 0) {
-                printf("input is equal to 'constsym'\n");
-            } else if (strcmp(input, ";") == 0) {
-                printf("input is equal to 'semisym'\n");
-            } else if (strcmp(input, ",") == 0) {
-                printf("input is equal to 'commasym'\n");
-            } else if (strcmp(input, "var") == 0) {
-                printf("input is equal to 'varsym'\n");
-            } else if (strcmp(input, "procedure") == 0) {
-                printf("input is equal to 'procsym'\n");
-            } else if (strcmp(input, ":=") == 0) {
-                printf("input is equal to 'becomessym'\n");
-            } else if (strcmp(input, "call") == 0) {
-                printf("input is equal to 'callsym'\n");
-            } else if (strcmp(input, "begin") == 0) {
-                printf("input is equal to 'beginsym'\n");
-            } else if (strcmp(input, "end") == 0) {
-                printf("input is equal to 'endsym'\n");
-            } else if (strcmp(input, "if") == 0) {
-                printf("input is equal to 'ifsym'\n");
-            } else if (strcmp(input, "then") == 0) {
-                printf("input is equal to 'thensym'\n");
-            } else if (strcmp(input, "else") == 0) {
-                printf("input is equal to 'elsesym'\n");
-            } else if (strcmp(input, "while") == 0) {
-                printf("input is equal to 'whilesym'\n");
-            } else if (strcmp(input, "do") == 0) {
-                printf("input is equal to 'dosym'\n");
-            } else if (strcmp(input, "read") == 0) {
-                printf("input is equal to 'readsym'\n");
-            } else if (strcmp(input, "write") == 0) {
-                printf("input is equal to 'writesym'\n");
-            } else if (strcmp(input, "skip") == 0) {
-                printf("input is equal to 'skipsym'\n");
-            } else if (strcmp(input, "odd") == 0) {
-                printf("input is equal to 'oddsym'\n");
-            } else {
+        if (strcmp(curr_string, "const") == 0) 
+        { 
+            new_token.typ = 1;
+        }  
+        else if (strcmp(curr_string, "var") == 0) {
+                new_token.typ = 4;
+            } 
+        else if (strcmp(curr_string, "procedure") == 0) {
+                new_token.typ = 5;
+            } 
+        else if (strcmp(curr_string, "call") == 0) {
+                new_token.typ = 7;
+            } 
+        else if (strcmp(curr_string, "begin") == 0) {
+                new_token.typ = 8;
+            } 
+        else if (strcmp(curr_string, "end") == 0) {
+                new_token.typ = 9;
+            } 
+        else if (strcmp(curr_string, "if") == 0) {
+                new_token.typ = 10;
+            } 
+        else if (strcmp(curr_string, "then") == 0) {
+                new_token.typ = 11;
+            } 
+        else if (strcmp(curr_string, "else") == 0) {
+                new_token.typ = 12;
+            } 
+        else if (strcmp(curr_string, "while") == 0) {
+                new_token.typ = 13;
+            } 
+        else if (strcmp(curr_string, "do") == 0) {
+                new_token.typ = 14;
+            } 
+        else if (strcmp(curr_string, "read") == 0) {
+                new_token.typ = 15;
+        } 
+        else if (strcmp(curr_string, "write") == 0) {
+                new_token.typ = 16;
+            } 
+        else if (strcmp(curr_string, "skip") == 0) {
+                new_token.typ = 17;
+            } 
+        else if (strcmp(curr_string, "odd") == 0) {
+                new_token.typ = 18;
+            } 
+        else {
                 printf("input does not match any of the string literals\n");
             }
     
