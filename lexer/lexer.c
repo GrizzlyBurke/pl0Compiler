@@ -62,37 +62,6 @@ bool is_valid_short(unsigned int x)
     }
 }
 
-bool is_whitespace(char c)
-{
-    if(isalpha(c) || isdigit(c) || ispunct(c))
-        return false;
-    else
-        return true;
-}
-
-// unfinished string reader
-// reading string from inputStream once an new word is found
-char * read_string(FILE * filePtr)
-{
-    char c;
-    int i = 0;
-    char string[50];
-    do
-    {
-        c = fgetc(filePtr);
-        col++;
-
-        if(isalpha(c) == 0 || isdigit(c) == 0)
-        {
-            string[i] = c;
-            i++;
-        }
-    } 
-    while (isspace(c) != 0);
-    
-
-}
-
 void comments()
 {
     char c;
