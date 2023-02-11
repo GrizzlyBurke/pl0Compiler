@@ -52,31 +52,29 @@ bool is_valid_short(unsigned int x)
         return true;
     else
     {
-        // short int stderr message
-        // lexer close
-        // exit(1)
+        fprinf(stderr, "Invalid short integer size.");
+        lexer_close();
+        exit(1);
     }
 }
 
 // unfinished string reader
-// reading string from inputStream once an alpha is found
+// reading string from inputStream once an new word is found
 char * read_string(FILE * filePtr)
 {
-    char c;
+    char c = 'a';
     char word [50];
     int i = 0;
-    while (1)
+    while (c != " ")
     {
-        if ( isdigit(c) || isalpha(c) )
-        {
-            word[i] = c;
-            
-        }
-        else
-        {
-
-        }
+        c = getc(filePtr);
+        word[i] = c;
+        i++;
+        col++;
+        
     }
+    ungetc(c);
+    col--;
 
 }
 
