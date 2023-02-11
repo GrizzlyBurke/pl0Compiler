@@ -26,12 +26,67 @@ int main(int argc, char * argv[])
 
 }
 
+// checking if the string read from input is a valid reserved word
+// otherwise, pass it to is_valid_ident()
+char * is_reserved_word(char * string)
+{
+    char * resWords[14][] = { "const", "var", "procedure", "call", "begin", "end", "if",
+                        "then", "else", "while", "do", "read", "write", "skip", "odd"};
+    
+    for (int i = 0; i < 14; i++)
+    {
+        if ( strcmp(string, resWords[i]) )
+        {
+            return resWords[i];
+        }
+        else
+        {
+            is_valid_ident(string);
+        }
+    }   
+}
+
+bool is_valid_short(unsigned int x)
+{
+    if ( (x >= SHRT_MIN) && (x <= SHRT_MAX) )
+        return true;
+    else
+    {
+        // short int stderr message
+        // lexer close
+        // exit(1)
+    }
+}
+
+// unfinished string reader
+// reading string from inputStream once an alpha is found
+char * read_string(FILE * filePtr)
+{
+    char c;
+    char word [50];
+    int i = 0;
+    while (1)
+    {
+        if ( isdigit(c) || isalpha(c) )
+        {
+            word[i] = c;
+            
+        }
+        else
+        {
+
+        }
+    }
+
+}
+
 void lexer_open(const char* fname)
 {
     filePtr = fopen(fname, "r");
     if (filePtr == NULL)
     {
-
+        fprintf(stderr, "File Pointer Error\n");
+        exit(1);
     }
 }
 
@@ -94,10 +149,10 @@ const char* lexer_filename()
 
 unsigned int lexer_line()
 {
-
+    return row;
 }
 
 unsigned int lexer_column()
 {
-
+    return col;
 }
