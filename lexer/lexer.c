@@ -55,7 +55,7 @@ bool is_valid_short(unsigned int x)
         return true;
     else
     {
-        fprintf(stderr, "Invalid short integer size.");
+        fprintf(stderr, "Invalid short integer size.\n");
         lexer_close();
         exit(1);
     }
@@ -349,6 +349,7 @@ token lexer_next()
         else {
             fprintf(stderr, "Err: Illegal token format...\n");
         }
+        return new_token;
     }
 }
 
