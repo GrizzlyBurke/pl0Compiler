@@ -62,15 +62,16 @@ bool is_valid_short(unsigned int x)
     }
 }
 
-void comments()
+char comments()
 {
-    char c;
-    while (fgetc(filePtr) != '\n')
-    {
-        col++;
-    }
-    col = 0;
-    row++;
+    char c = fgetc(filePtr);
+    while (c != '\n')
+        {
+            c = fgetc(filePtr);
+        }
+        row++;
+        col = 0;
+    return fgetc(filePtr);
 }
 
 char * string_builder()
@@ -171,12 +172,24 @@ char * number_builder()
 token lexer_next()
 {   
     char c = fgetc(filePtr);
+    char * curr_string;
 
+    new_token.column = lexer_column();
+    new_token.line = lexer_line();
+    new_token.filename = fname;
+    while (c == ' ')
+    {
+        c = fgetc(filePtr);
+        col++;
+    }
+    while (c == '#')
+    {
+        c = comments();
+    }
     if(isalpha(c) == 0) 
     {
         ungetc(c, stdin);
-        string_builder();
-
+        curr_string = string_builder();
 
         if (strcmp(curr_string, "const") == 0) { 
                 new_token.typ = 1;
@@ -229,6 +242,7 @@ token lexer_next()
                 new_token.text = realloc(new_token.text, (sizeof(char) * strlen(curr_string) + 1));
                 strcpy(new_token.text, curr_string);
             }
+        return new_token;
     }  
     if(isdigit(curr_string[0]))
     {
@@ -236,6 +250,14 @@ token lexer_next()
         if(is_valid_short(converter))
             new_token.typ = 22;
             new_token.value = converter;
+    }
+    if (c == '#')
+    {
+
+    }
+    if (isspace(c) == 0)
+    {
+        col++;
     }
     if(ispunct(curr_string[0]))
     {        
