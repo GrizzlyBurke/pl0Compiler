@@ -14,7 +14,7 @@
 
 // global variables for each function in lexer
 static const char * fname;
-static const FILE * filePtr;
+static FILE * filePtr;
 static token new_token;
 unsigned int row, col;
 
@@ -25,8 +25,7 @@ int main(int argc, char * argv[])
 
     // opening file 
     lexer_open(fname);
-
-    lexer_ouput();
+    lexer_output();
 
 }
 
@@ -56,7 +55,7 @@ bool is_valid_short(unsigned int x)
         return true;
     else
     {
-        fprinf(stderr, "Invalid short integer size.");
+        fprintf(stderr, "Invalid short integer size.");
         lexer_close();
         exit(1);
     }
@@ -77,7 +76,7 @@ char comments()
 char * string_builder()
 {
     char c = fgetc(filePtr);
-    char string[100];
+    char * string = malloc(sizeof(char) * 50);
     int i = 0;
 
     while (isalpha(c) == 0 || isdigit(c) == 0)
@@ -131,7 +130,7 @@ bool lexer_done()
     }
     else
     {
-        unputc(check, stdin);
+        ungetc(check, stdin);
         return false;
     }
 }
@@ -140,7 +139,7 @@ char * number_builder()
 {
     int i = 0;
     char c = fgetc(filePtr);
-    char string[50];
+    char * string = malloc(sizeof(char) * 50);
     int num = 0;
     char * end;
 
