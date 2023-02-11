@@ -74,8 +74,13 @@ token lexer_next()
             \
             \
              -> ispunct() -> check next char with fgetc() -> if single, fputc() back into stream
-                                                          \
-                                                          \-> if <=, etc -> tokenize
+            \                                              \
+            \                                              \-> if <=, etc -> tokenize
+            \                                              \
+            \                                              \-> if # -> read until newline
+            \
+            \
+             -> is newline -> reset col count, increment row count
     
     
     
