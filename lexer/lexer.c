@@ -189,6 +189,11 @@ token lexer_next()
     if(isalpha(c) == 0) 
     {
         ungetc(c, stdin);
+
+        new_token.column = lexer_column();
+        new_token.line = lexer_line();
+        new_token.filename = fname;
+
         curr_string = string_builder();
 
         if (strcmp(curr_string, "const") == 0) { 
@@ -244,22 +249,14 @@ token lexer_next()
             }
         return new_token;
     }  
-    if(isdigit(curr_string[0]))
+    if(isdigit(c) == 0)
     {
         short converter = (short) strtol(curr_string, NULL, 10);
         if(is_valid_short(converter))
             new_token.typ = 22;
             new_token.value = converter;
     }
-    if (c == '#')
-    {
-
-    }
-    if (isspace(c) == 0)
-    {
-        col++;
-    }
-    if(ispunct(curr_string[0]))
+    if(ispunct(c) == 0)
     {        
         if(strcmp(curr_string, "<>") == 0) {
             new_token.typ = 24;
