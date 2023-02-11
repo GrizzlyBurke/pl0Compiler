@@ -42,6 +42,7 @@ bool is_valid_short(int x)
    
 }
 
+// function consumes comments when encountering #, also catches unclosed comments
 char comments()
 {
     char c = fgetc(filePtr);
@@ -58,6 +59,7 @@ char comments()
     return fgetc(filePtr);
 }
 
+// function creates string from fgetc() for use in reserved words and identifers
 char * string_builder()
 {
     char c = fgetc(filePtr);
@@ -88,6 +90,7 @@ char * string_builder()
     return string;
 }
 
+// opens lexer file pointer and checks for errors
 void lexer_open(const char* fname)
 {
     filePtr = fopen(fname, "r");
@@ -120,6 +123,7 @@ bool lexer_done()
     }
 }
 
+// function builds string from fgetc() and passes string to be resolved into int
 char * number_builder()
 {
     int i = 0;
@@ -150,12 +154,13 @@ char * number_builder()
 }
 
 // primary logic of the lexical analyzer
-// checks isalpha, isdigit, ispunct with various sub cases
+// checks isalpha, isdigit, ispunct with various sub cases for creating tokens
 token lexer_next()
 {   
     char c = fgetc(filePtr);
     char * curr_string;
 
+    // checking for whitespace and moving the input stream
     while (isspace(c) != 0)
     {
         if (c == '\n')
@@ -166,10 +171,12 @@ token lexer_next()
         c = fgetc(filePtr);
         col++;
     }
+    // checking for comment start and calling the comment removing function
     while (c == '#')
     {
         c = comments();
     }
+    // checking if the input starts with an alpha and then builds string for token
     if(isalpha(c) != 0) 
     {
         ungetc(c, filePtr);
@@ -254,6 +261,8 @@ token lexer_next()
             }
         return new_token;
     }  
+    // checks if input stream has digit, creates number string, converts to int and checks
+    // if it is a valid short
     if(isdigit(c) > 0) 
     {
         ungetc(c, filePtr);
@@ -274,6 +283,7 @@ token lexer_next()
             exit(1);
         }
     }
+    // checks various punctuation cases and determine tokens for each
     if(ispunct(c) != 0)
     {       
          if(c == '<') {
@@ -383,6 +393,7 @@ token lexer_next()
         new_token.filename = fname;
         return new_token;
     }
+    // checking for end of file
     if ((int)c == EOF)
     {
         new_token.typ = 33;
@@ -395,16 +406,18 @@ token lexer_next()
     return new_token;
 }
 
+// function returns lexer filename
 const char* lexer_filename()
 {
     return fname;
 }
 
+// function returns lexer line
 unsigned int lexer_line()
 {
     return row;
 }
-
+// function returns lexer column
 unsigned int lexer_column()
 {
     return col;
