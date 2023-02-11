@@ -74,23 +74,61 @@ bool is_whitespace(char c)
 // reading string from inputStream once an new word is found
 char * read_string(FILE * filePtr)
 {
-    char c = 'a';
-    char word [50];
+    char c;
     int i = 0;
-    while (c != " ")
+    char string[50];
+    do
     {
-        c = getc(filePtr);
-        if(!is_whitespace(c))
-            {
-                word[i] = c;
-                i++;
-            }
+        c = fgetc(filePtr);
+        col++;
+
+        if(isalpha(c) == 0 || isdigit(c) == 0)
+        {
+            string[i] = c;
+            i++;
+        }
+    } 
+    while (isspace(c) != 0);
+    
+
+}
+
+void comments()
+{
+    char c;
+    while (fgetc(filePtr) != '\n')
+    {
         col++;
     }
-    word[i] = '\0';
+    col = 0;
+    row++;
+}
 
-    return word;
+char * string_builder()
+{
+    char c = fgetc(filePtr);
+    char string[100];
+    int i = 0;
 
+    while (isalpha(c) == 0 || isdigit(c) == 0)
+    {
+        string[i] = c;
+        col++;
+        i++;
+        c = fgetc(filePtr);
+    }
+    if(c == '\n')
+    {
+        row++;
+        col = 0;
+        string[i] = '\0';
+        return string;
+    }
+    ungetc(c, stdin);
+    col--;
+    string[i] = '\0';
+
+    return string;
 }
 
 void lexer_open(const char* fname)
@@ -132,16 +170,12 @@ bool lexer_done()
 // checks isalpha, isdigit, ispunct with various sub cases
 token lexer_next()
 {   
-    char * curr_string = read_string(filePtr);
+    char c = fgetc(filePtr);
 
-    if(isalpha(curr_string[0])) 
+    if(isalpha(c) == 0) 
     {
-        new_token.text = NULL;
-        new_token.filename = lexer_filename();
-        new_token.column = lexer_column();
-        new_token.line = lexer_line();
-
-        if
+        ungetc(c, stdin);
+        string_builder();
 
 
         if (strcmp(curr_string, "const") == 0) { 
@@ -192,7 +226,7 @@ token lexer_next()
         //if its an alpha char but not a reserved word, it must be an indentifier.
         else {
                 new_token.typ = 21;
-                new_token.text = realloc(new_token.text, (sizeof(char) * strlen(curr_string)));
+                new_token.text = realloc(new_token.text, (sizeof(char) * strlen(curr_string) + 1));
                 strcpy(new_token.text, curr_string);
             }
     }  
