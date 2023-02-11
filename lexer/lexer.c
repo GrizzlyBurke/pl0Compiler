@@ -16,7 +16,8 @@
 static const char * fname;
 static FILE * filePtr;
 static token new_token;
-unsigned int row, col;
+unsigned int row = 1; 
+unsigned int col = 1;
 
 int main(int argc, char * argv[])
 {
@@ -24,12 +25,14 @@ int main(int argc, char * argv[])
     fname = argv[1];
 
     // opening file 
+    
     lexer_open(fname);
     lexer_output();
+    lexer_close();
 
 }
 
-bool is_valid_short(unsigned int x)
+bool is_valid_short(int x)
 {
     if ( (x >= SHRT_MIN) && (x <= SHRT_MAX) )
         return true;
@@ -49,32 +52,35 @@ char comments()
             c = fgetc(filePtr);
         }
         row++;
-        col = 0;
+        col = 1;
     return fgetc(filePtr);
 }
 
 char * string_builder()
 {
-    printf("Hello!");
+    printf("Hello!\n");
     char c = fgetc(filePtr);
     char * string = malloc(sizeof(char) * 50);
     int i = 0;
 
-    while (isalpha(c) == 0 || isdigit(c) == 0)
+    while (isalpha(c) != 0 || isdigit(c) != 0)
     {
         string[i] = c;
         col++;
         i++;
+        printf("i get here\n");
         c = fgetc(filePtr);
+        
     }
     if(c == '\n')
     {
         row++;
-        col = 0;
+        col = 1;
         string[i] = '\0';
+        
         return string;
     }
-    ungetc(c, stdin);
+    ungetc(c, filePtr);
     col--;
     string[i] = '\0';
 
@@ -83,7 +89,6 @@ char * string_builder()
 
 void lexer_open(const char* fname)
 {
-    printf("Hello!");
     filePtr = fopen(fname, "r");
     if (filePtr == NULL)
     {
@@ -105,14 +110,11 @@ bool lexer_done()
     char check = fgetc(filePtr);
     if ( check == EOF || filePtr == NULL )
     {
-        new_token.typ = 33;
-        new_token.column = lexer_column();
-        new_token.line = lexer_line();
         return true;
     }
     else
     {
-        ungetc(check, stdin);
+        ungetc(check, filePtr);
         return false;
     }
 }
@@ -123,7 +125,7 @@ char * number_builder()
     char c = fgetc(filePtr);
     char * string = malloc(sizeof(char) * 50);
 
-    while(isdigit(c) == 0)
+    while(isdigit(c) > 0)
     {
         string[i] = c;
         i++;
@@ -134,12 +136,12 @@ char * number_builder()
     if(c == '\n')
     {
         row++;
-        col = 0;
+        col = 1;
         string[i] = '\0';
         return string;
     }
 
-    ungetc(c, stdin);
+    ungetc(c, filePtr);
     col--;
     string[i] = '\0';
 
@@ -152,7 +154,8 @@ token lexer_next()
 {   
     char c = fgetc(filePtr);
     char * curr_string;
-
+   
+   
     while (c == ' ')
     {
         c = fgetc(filePtr);
@@ -162,9 +165,9 @@ token lexer_next()
     {
         c = comments();
     }
-    if(isalpha(c) == 0) 
+    if(isalpha(c) != 0) 
     {
-        ungetc(c, stdin);
+        ungetc(c, filePtr);
 
         new_token.column = lexer_column();
         new_token.line = lexer_line();
@@ -225,10 +228,12 @@ token lexer_next()
             }
         return new_token;
     }  
-    if(isdigit(c) == 0) 
+    if(isdigit(c) > 0) 
     {
+        ungetc(c, filePtr);
         curr_string = number_builder();
-        short converter = (short) strtol(curr_string, NULL, 10);
+        int converter = strtol(curr_string, NULL, 10);
+        //printf("Converter: %d", converter);
         if(is_valid_short(converter))
         {
             new_token.typ = 22;
@@ -239,8 +244,9 @@ token lexer_next()
             return new_token;
         }
     }
-    if(ispunct(c) == 0)
+    if(ispunct(c) != 0)
     {       
+        //ungetc(c, filePtr);
         new_token.column = lexer_column();
         new_token.line = lexer_line();
         new_token.filename = fname;
@@ -258,7 +264,7 @@ token lexer_next()
                 col += 2;
             }
             else {
-                ungetc(c, stdin);
+                ungetc(c, filePtr);
                 col++;
                 new_token.typ = 25;
             }
@@ -272,7 +278,7 @@ token lexer_next()
                 col += 2;
             }
             else {
-                ungetc(c, stdin);
+                ungetc(c, filePtr);
                 col++;
                 new_token.typ = 25;
             }

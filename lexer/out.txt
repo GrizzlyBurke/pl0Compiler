@@ -1,0 +1,12 @@
+Tokens from file hw2-test.pl0
+Number Name       Line Column Text/Value
+Hello!
+i get here
+i get here
+i get here
+4      varsym     1    1     
+23     eqsym      1    4     
+22     numbersym  1    6      3
+2      semisym    1    6     
+2      semisym    1    6     
+2      semisym    1    6     
