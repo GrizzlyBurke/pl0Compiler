@@ -28,20 +28,20 @@ int main(int argc, char * argv[])
 
 // checking if the string read from input is a valid reserved word
 // otherwise, pass it to is_valid_ident()
-char * is_reserved_word(char * string)
+bool is_reserved_word(char * string)
 {
-    char resWords[] = { "const", "var", "procedure", "call", "begin", "end", "if",
+    char resWords[][10] = { "const", "var", "procedure", "call", "begin", "end", "if",
                         "then", "else", "while", "do", "read", "write", "skip", "odd"};
     
     for (int i = 0; i < 14; i++)
     {
         if ( strcmp(string, resWords[i]) )
         {
-            return resWords[i];
+            return true;
         }
         else
         {
-            is_valid_ident(string);
+            return false;
         }
     }   
 }
