@@ -58,7 +58,6 @@ char comments()
 
 char * string_builder()
 {
-    printf("Hello!\n");
     char c = fgetc(filePtr);
     char * string = malloc(sizeof(char) * 50);
     int i = 0;
@@ -68,7 +67,6 @@ char * string_builder()
         string[i] = c;
         col++;
         i++;
-        printf("i get here\n");
         c = fgetc(filePtr);
         
     }
@@ -154,10 +152,14 @@ token lexer_next()
 {   
     char c = fgetc(filePtr);
     char * curr_string;
-   
-   
-    while (c == ' ')
+
+    while (isspace(c) != 0)
     {
+        if( c == '\n')
+        {
+            col = 1;
+            row++;
+        }
         c = fgetc(filePtr);
         col++;
     }
@@ -246,7 +248,6 @@ token lexer_next()
     }
     if(ispunct(c) != 0)
     {       
-        //ungetc(c, filePtr);
         new_token.column = lexer_column();
         new_token.line = lexer_line();
         new_token.filename = fname;
@@ -338,6 +339,13 @@ token lexer_next()
             fprintf(stderr, "Err: Illegal token format...\n");
         }
         return new_token;
+    }
+    if ((int)c == EOF)
+    {
+        new_token.typ = 33;
+        new_token.column = lexer_column();
+        new_token.line = lexer_line();
+        new_token.filename = fname;
     }
     return new_token;
 }
