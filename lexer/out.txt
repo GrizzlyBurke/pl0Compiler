@@ -1,9 +1,9 @@
 Tokens from file hw2-test0.pl0
 Number Name       Line Column Text/Value
-4      varsym     1    1     
+4      varsym     1    1      "var"
 21     identsym   1    4      "x"
-2      semisym    1    5      "x"
+2      semisym    1    5      ";"
 21     identsym   2    2      "x"
-6      becomessym 2    5      "x"
-22     numbersym  2    6      3
-33     eofsym     3    2      "x"
+6      becomessym 2    5      ":="
+22     numbersym  2    7      3
+33     eofsym     3    1     
