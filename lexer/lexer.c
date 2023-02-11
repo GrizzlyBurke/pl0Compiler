@@ -29,26 +29,6 @@ int main(int argc, char * argv[])
 
 }
 
-// checking if the string read from input is a valid reserved word
-// otherwise, pass it to is_valid_ident()
-bool is_reserved_word(char * string)
-{
-    char resWords[][10] = { "const", "var", "procedure", "call", "begin", "end", "if",
-                        "then", "else", "while", "do", "read", "write", "skip", "odd"};
-    
-    for (int i = 0; i < 14; i++)
-    {
-        if (strcmp(string, resWords[i]))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }   
-}
-
 bool is_valid_short(unsigned int x)
 {
     if ( (x >= SHRT_MIN) && (x <= SHRT_MAX) )
@@ -75,6 +55,7 @@ char comments()
 
 char * string_builder()
 {
+    printf("Hello!");
     char c = fgetc(filePtr);
     char * string = malloc(sizeof(char) * 50);
     int i = 0;
@@ -102,6 +83,7 @@ char * string_builder()
 
 void lexer_open(const char* fname)
 {
+    printf("Hello!");
     filePtr = fopen(fname, "r");
     if (filePtr == NULL)
     {
@@ -140,8 +122,6 @@ char * number_builder()
     int i = 0;
     char c = fgetc(filePtr);
     char * string = malloc(sizeof(char) * 50);
-    int num = 0;
-    char * end;
 
     while(isdigit(c) == 0)
     {
@@ -250,12 +230,14 @@ token lexer_next()
         curr_string = number_builder();
         short converter = (short) strtol(curr_string, NULL, 10);
         if(is_valid_short(converter))
+        {
             new_token.typ = 22;
             new_token.value = converter;
             new_token.column = lexer_column();
             new_token.line = lexer_line();
             new_token.filename = fname;
             return new_token;
+        }
     }
     if(ispunct(c) == 0)
     {       
@@ -351,6 +333,7 @@ token lexer_next()
         }
         return new_token;
     }
+    return new_token;
 }
 
 const char* lexer_filename()
