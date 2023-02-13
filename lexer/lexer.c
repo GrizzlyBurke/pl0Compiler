@@ -10,9 +10,9 @@
 
 
 // global variables for each function in lexer
-const char* fname;
-const FILE * filePtr;
-const unsigned int row, col;
+static const char * fname;
+static const FILE * filePtr;
+unsigned int row, col;
 
 int main(int argc, char * argv[])
 {
@@ -30,7 +30,7 @@ int main(int argc, char * argv[])
 // otherwise, pass it to is_valid_ident()
 char * is_reserved_word(char * string)
 {
-    char * resWords[14][] = { "const", "var", "procedure", "call", "begin", "end", "if",
+    char resWords[] = { "const", "var", "procedure", "call", "begin", "end", "if",
                         "then", "else", "while", "do", "read", "write", "skip", "odd"};
     
     for (int i = 0; i < 14; i++)
@@ -73,7 +73,7 @@ char * read_string(FILE * filePtr)
         col++;
         
     }
-    ungetc(c);
+    ungetc(c, stdin );
     col--;
 
 }
