@@ -35,7 +35,7 @@ bool is_reserved_word(char * string)
     
     for (int i = 0; i < 14; i++)
     {
-        if ( strcmp(string, resWords[i]) )
+        if (strcmp(string, resWords[i]))
         {
             return true;
         }
@@ -125,7 +125,53 @@ bool lexer_done()
 // primary logic of the lexical analyzer
 // checks isalpha, isdigit, ispunct with various sub cases
 token lexer_next()
-{
+{   
+    char * curr_string = read_string(filePtr);
+    if(isAlpha(curr_string[0]))
+    {
+            if (strcmp(input, ".") == 0) {
+                printf("input is equal to 'periodsym'\n");
+            } else if (strcmp(input, "const") == 0) {
+                printf("input is equal to 'constsym'\n");
+            } else if (strcmp(input, ";") == 0) {
+                printf("input is equal to 'semisym'\n");
+            } else if (strcmp(input, ",") == 0) {
+                printf("input is equal to 'commasym'\n");
+            } else if (strcmp(input, "var") == 0) {
+                printf("input is equal to 'varsym'\n");
+            } else if (strcmp(input, "procedure") == 0) {
+                printf("input is equal to 'procsym'\n");
+            } else if (strcmp(input, ":=") == 0) {
+                printf("input is equal to 'becomessym'\n");
+            } else if (strcmp(input, "call") == 0) {
+                printf("input is equal to 'callsym'\n");
+            } else if (strcmp(input, "begin") == 0) {
+                printf("input is equal to 'beginsym'\n");
+            } else if (strcmp(input, "end") == 0) {
+                printf("input is equal to 'endsym'\n");
+            } else if (strcmp(input, "if") == 0) {
+                printf("input is equal to 'ifsym'\n");
+            } else if (strcmp(input, "then") == 0) {
+                printf("input is equal to 'thensym'\n");
+            } else if (strcmp(input, "else") == 0) {
+                printf("input is equal to 'elsesym'\n");
+            } else if (strcmp(input, "while") == 0) {
+                printf("input is equal to 'whilesym'\n");
+            } else if (strcmp(input, "do") == 0) {
+                printf("input is equal to 'dosym'\n");
+            } else if (strcmp(input, "read") == 0) {
+                printf("input is equal to 'readsym'\n");
+            } else if (strcmp(input, "write") == 0) {
+                printf("input is equal to 'writesym'\n");
+            } else if (strcmp(input, "skip") == 0) {
+                printf("input is equal to 'skipsym'\n");
+            } else if (strcmp(input, "odd") == 0) {
+                printf("input is equal to 'oddsym'\n");
+            } else {
+                printf("input does not match any of the string literals\n");
+            }
+    
+    }  
     /*
     fgetc() ->  isalpha() -> collect chars until whitespace -> isreservedword() -> tokenize
             \                                               \
