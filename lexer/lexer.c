@@ -176,8 +176,10 @@ char * curr_string = read_string(filePtr);
     else if (strcmp(curr_string, "odd") == 0) {
             new_token.typ = 18;
         } 
-    else{
-            fprintf(stderr,"Err: Illegal token format...\n");
+    //if its an alpha char but not a reserved word, it must be an indentifier.
+    else {
+            new_token.typ = 21;
+            strcpy(new_token.text, curr_string);
         }
     }  
     if(isdigit(curr_string[0]))
