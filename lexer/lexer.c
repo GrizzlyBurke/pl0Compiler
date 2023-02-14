@@ -127,71 +127,107 @@ bool lexer_done()
 // checks isalpha, isdigit, ispunct with various sub cases
 token lexer_next()
 {   
-    char * curr_string = read_string(filePtr);
-    if(isAlpha(curr_string[0]))
+char * curr_string = read_string(filePtr);
+
+    if(isalpha(curr_string[0])) 
     {
-        if (strcmp(curr_string, "const") == 0) 
-        { 
+    if (strcmp(curr_string, "const") == 0) { 
             new_token.typ = 1;
-        }  
-        else if (strcmp(curr_string, "var") == 0) {
-                new_token.typ = 4;
-            } 
-        else if (strcmp(curr_string, "procedure") == 0) {
-                new_token.typ = 5;
-            } 
-        else if (strcmp(curr_string, "call") == 0) {
-                new_token.typ = 7;
-            } 
-        else if (strcmp(curr_string, "begin") == 0) {
-                new_token.typ = 8;
-            } 
-        else if (strcmp(curr_string, "end") == 0) {
-                new_token.typ = 9;
-            } 
-        else if (strcmp(curr_string, "if") == 0) {
-                new_token.typ = 10;
-            } 
-        else if (strcmp(curr_string, "then") == 0) {
-                new_token.typ = 11;
-            } 
-        else if (strcmp(curr_string, "else") == 0) {
-                new_token.typ = 12;
-            } 
-        else if (strcmp(curr_string, "while") == 0) {
-                new_token.typ = 13;
-            } 
-        else if (strcmp(curr_string, "do") == 0) {
-                new_token.typ = 14;
-            } 
-        else if (strcmp(curr_string, "read") == 0) {
-                new_token.typ = 15;
-        } 
-        else if (strcmp(curr_string, "write") == 0) {
-                new_token.typ = 16;
-            } 
-        else if (strcmp(curr_string, "skip") == 0) {
-                new_token.typ = 17;
-            } 
-        else if (strcmp(curr_string, "odd") == 0) {
-                new_token.typ = 18;
-            } 
-        else {
-                printf("input does not match any of the string literals\n");
-            }
-    
     }  
-    /*
-    fgetc() ->  isalpha() -> collect chars until whitespace -> isreservedword() -> tokenize
-            \                                               \
-            \                                               \-> isident() -> needs punct after
-            \                                               \
-            \                                               \-> else might be error
-            \
-             -> isdigit() -> collect until whitespace -> convert int -> check size from limits.h
-            \
-            \
-            \
+    else if (strcmp(curr_string, "var") == 0) {
+            new_token.typ = 4;
+        } 
+    else if (strcmp(curr_string, "procedure") == 0) {
+            new_token.typ = 5;
+        } 
+    else if (strcmp(curr_string, "call") == 0) {
+            new_token.typ = 7;
+        } 
+    else if (strcmp(curr_string, "begin") == 0) {
+            new_token.typ = 8;
+        } 
+    else if (strcmp(curr_string, "end") == 0) {
+            new_token.typ = 9;
+        } 
+    else if (strcmp(curr_string, "if") == 0) {
+            new_token.typ = 10;
+        } 
+    else if (strcmp(curr_string, "then") == 0) {
+            new_token.typ = 11;
+        } 
+    else if (strcmp(curr_string, "else") == 0) {
+            new_token.typ = 12;
+        } 
+    else if (strcmp(curr_string, "while") == 0) {
+            new_token.typ = 13;
+        } 
+    else if (strcmp(curr_string, "do") == 0) {
+            new_token.typ = 14;
+        } 
+    else if (strcmp(curr_string, "read") == 0) {
+            new_token.typ = 15;
+        } 
+    else if (strcmp(curr_string, "write") == 0) {
+            new_token.typ = 16;
+        } 
+    else if (strcmp(curr_string, "skip") == 0) {
+            new_token.typ = 17;
+        } 
+    else if (strcmp(curr_string, "odd") == 0) {
+            new_token.typ = 18;
+        } 
+    else{
+            fprintf(stderr,"Err: Illegal token format...\n");
+        }
+    }  
+    if(isdigit(curr_string[0]))
+    {
+        short converter = (short) strtol(curr_string, NULL, 10);
+        if(is_valid_short(converter))
+            new_token.typ = 22;
+    }
+    if(ispunct(curr_string[0]))
+    {
+        if(ispunct(fgetc(filePtr)) != 0) 
+        {
+            ungetc(filePtr, stdin);
+        
+            if(strcmp(curr_string, "<>") == 0) {
+                new_token.typ = 24;
+            }
+            if(strcmp(curr_string, "<=") == 0) {
+                new_token.typ == 26;
+            }
+            if(strcmp(curr_string, ">=") == 0) {
+                new_token.typ = 28;
+            }
+        }
+         else if(strcmp(curr_string, "<") == 0) {
+            new_token.typ = 25;
+        }
+         else if(strcmp(curr_string, ">") == 0) {
+            new_token.typ = 27;
+        }
+        else if(strcmp(curr_string, "=") == 0) {
+            new_token.typ = 23;
+        }
+        else if(strcmp(curr_string, "+") == 0) {
+            new_token.typ = 29;
+        }
+        else if(strcmp(curr_string, "-") == 0) {
+            new_token.typ = 30;
+        }
+        else if(strcmp(curr_string, "*") == 0) {
+            new_token.typ = 31;
+        }
+         else if(strcmp(curr_string, "/") == 0) {
+            new_token.typ = 32;
+        }
+        else {
+                fprintf(stderr, "Err: Illegal token format...\n");
+        }
+    }
+            /*
              -> ispunct() -> check next char with fgetc() -> if single, fputc() back into stream
             \                                              \
             \                                              \-> if <=, etc -> tokenize
@@ -200,10 +236,7 @@ token lexer_next()
             \
             \
              -> is newline -> reset col count, increment row count
-    
-    
-    
-    */
+            */
 }
 
 const char* lexer_filename()
