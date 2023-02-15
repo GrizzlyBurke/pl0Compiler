@@ -135,6 +135,37 @@ bool lexer_done()
     }
 }
 
+char * number_builder()
+{
+    int i = 0;
+    char c = fgetc(filePtr);
+    char string[50];
+    int num = 0;
+    char * end;
+
+    while(isdigit(c) == 0)
+    {
+        string[i] = c;
+        i++;
+        col++;
+        c = fgetc(filePtr);
+    }
+
+    if(c == '\n')
+    {
+        row++;
+        col = 0;
+        string[i] = '\0';
+        return string;
+    }
+
+    ungetc(c, stdin);
+    col--;
+    string[i] = '\0';
+
+    return string;
+}
+
 // primary logic of the lexical analyzer
 // checks isalpha, isdigit, ispunct with various sub cases
 token lexer_next()
