@@ -179,54 +179,70 @@ token lexer_next()
 
         if (strcmp(curr_string, "const") == 0) { 
                 new_token.typ = 1;
+                new_token.text = "const";
         }  
         else if (strcmp(curr_string, "var") == 0) {
                 new_token.typ = 4;
+                new_token.text = "var";
             } 
         else if (strcmp(curr_string, "procedure") == 0) {
                 new_token.typ = 5;
+                new_token.text = "procedure";
             } 
         else if (strcmp(curr_string, "call") == 0) {
                 new_token.typ = 7;
+                new_token.text = "call";
             } 
         else if (strcmp(curr_string, "begin") == 0) {
                 new_token.typ = 8;
+                new_token.text = "begin";
             } 
         else if (strcmp(curr_string, "end") == 0) {
                 new_token.typ = 9;
+                new_token.text = "end";
             } 
         else if (strcmp(curr_string, "if") == 0) {
                 new_token.typ = 10;
+                new_token.text = "if";
             } 
         else if (strcmp(curr_string, "then") == 0) {
                 new_token.typ = 11;
+                new_token.text = "then";
             } 
         else if (strcmp(curr_string, "else") == 0) {
                 new_token.typ = 12;
+                new_token.text = "else";
             } 
         else if (strcmp(curr_string, "while") == 0) {
                 new_token.typ = 13;
+                new_token.text = "while";
             } 
         else if (strcmp(curr_string, "do") == 0) {
                 new_token.typ = 14;
+                new_token.text = "do";
             } 
         else if (strcmp(curr_string, "read") == 0) {
                 new_token.typ = 15;
+                new_token.text = "read";
             } 
         else if (strcmp(curr_string, "write") == 0) {
                 new_token.typ = 16;
+                new_token.text = "write";
             } 
         else if (strcmp(curr_string, "skip") == 0) {
                 new_token.typ = 17;
+                new_token.text = "skip";
             } 
         else if (strcmp(curr_string, "odd") == 0) {
                 new_token.typ = 18;
+                new_token.text = "odd";
             } 
         //if its an alpha char but not a reserved word, it must be an indentifier.
         else {
                 new_token.typ = 21;
+                new_token.text = NULL;
                 new_token.text = realloc(new_token.text, (sizeof(char) * strlen(curr_string) + 1));
-                strcpy(new_token.text, curr_string);
+                new_token.text = curr_string;
             }
         return new_token;
     }  
@@ -258,16 +274,19 @@ token lexer_next()
 
             if(c == '>') {
                 new_token.typ = 24;
+                new_token.text = "<>";
                 col += 2;
             }
             else if(c == '=') {
                 new_token.typ = 26;
+                new_token.text = "<=";
                 col += 2;
             }
             else {
                 ungetc(c, filePtr);
                 col++;
                 new_token.typ = 25;
+                new_token.text = "<";
             }
         }
          else if(c == '>') {
@@ -276,24 +295,29 @@ token lexer_next()
 
             if(c == '=') {
                 new_token.typ = 28;
+                new_token.text = ">=";
                 col += 2;
             }
             else {
                 ungetc(c, filePtr);
                 col++;
                 new_token.typ = 25;
+                new_token.text = ">";
             }
         }
         else if(c == '.') {
             new_token.typ = 0;
+            new_token.text = ".";
             col++;
         }
         else if(c == ';') {
             new_token.typ = 2;
+            new_token.text = ";";
             col++;
         }
         else if(c == ',') {
             new_token.typ = 3;
+            new_token.text = ",";
             col++;
         }
         else if(c == ':') {
@@ -301,6 +325,7 @@ token lexer_next()
             c = fgetc(filePtr);
             if(c == '=') {
                 new_token.typ = 6;
+                new_token.text = ":=";
                 col += 2;
             }
             else {
@@ -309,30 +334,37 @@ token lexer_next()
         }
         else if(c == '(') {
             new_token.typ = 19;
+            new_token.text = "(";
             col++;
         }  
         else if(c == ')') {
             new_token.typ = 20;
+            new_token.text = ")";
             col++;
         }
         else if(c == '=') {
             new_token.typ = 23;
+            new_token.text = "=";
             col++;
         }
         else if(c == '+') {
             new_token.typ = 29;
+            new_token.text = "+";
             col++;
         }
         else if(c == '-') {
             new_token.typ = 30;
+            new_token.text = "-";
             col++;
         }
         else if(c == '*') {
             new_token.typ = 31;
+            new_token.text = "*";
             col++;
         }
         else if(c == '/') {
             new_token.typ = 32;
+            new_token.text = "/";
             col++;
         }            
         else {
@@ -346,6 +378,7 @@ token lexer_next()
         new_token.column = lexer_column();
         new_token.line = lexer_line();
         new_token.filename = fname;
+        new_token.text = NULL;
     }
     return new_token;
 }
