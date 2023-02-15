@@ -249,8 +249,9 @@ token lexer_next()
             }
         return new_token;
     }  
-    if(isdigit(c) == 0)
+    if(isdigit(c) == 0) 
     {
+        curr_string = number_builder();
         short converter = (short) strtol(curr_string, NULL, 10);
         if(is_valid_short(converter))
             new_token.typ = 22;
