@@ -174,9 +174,6 @@ token lexer_next()
     char c = fgetc(filePtr);
     char * curr_string;
 
-    new_token.column = lexer_column();
-    new_token.line = lexer_line();
-    new_token.filename = fname;
     while (c == ' ')
     {
         c = fgetc(filePtr);
@@ -256,54 +253,104 @@ token lexer_next()
         if(is_valid_short(converter))
             new_token.typ = 22;
             new_token.value = converter;
+            new_token.column = lexer_column();
+            new_token.line = lexer_line();
+            new_token.filename = fname;
+            return new_token;
     }
     if(ispunct(c) == 0)
-    {        
-        if(strcmp(curr_string, "<>") == 0) {
-            new_token.typ = 24;
+    {       
+        new_token.column = lexer_column();
+        new_token.line = lexer_line();
+        new_token.filename = fname;
+
+         if(c == '<') {
+
+            c = fgetc(filePtr);
+
+            if(c == '>') {
+                new_token.typ = 24;
+                col += 2;
+            }
+            else if(c == '=') {
+                new_token.typ = 26;
+                col += 2;
+            }
+            else {
+                ungetc(c, stdin);
+                col++;
+                new_token.typ = 25;
+            }
         }
-        else if(strcmp(curr_string, "<=") == 0) {
-            new_token.typ == 26;
+         else if(c == '>') {
+            
+            c = fgetc(filePtr);
+
+            if(c == '=') {
+                new_token.typ = 28;
+                col += 2;
+            }
+            else {
+                ungetc(c, stdin);
+                col++;
+                new_token.typ = 25;
+            }
         }
-        else if(strcmp(curr_string, ">=") == 0) {
-            new_token.typ = 28;
+        else if(c == '.') {
+            new_token.typ = 0;
+            col++;
         }
-         else if(strcmp(curr_string, "<") == 0) {
-            new_token.typ = 25;
+        else if(c == ';') {
+            new_token.typ = 2;
+            col++;
         }
-         else if(strcmp(curr_string, ">") == 0) {
-            new_token.typ = 27;
+        else if(c == ',') {
+            new_token.typ = 3;
+            col++;
         }
-        else if(strcmp(curr_string, "=") == 0) {
+        else if(c == ':') {
+
+            c = fgetc(filePtr);
+            if(c == '=') {
+                new_token.typ = 6;
+                col += 2;
+            }
+            else {
+                //lexical_error();
+            }
+        }
+        else if(c == '(') {
+            new_token.typ = 19;
+            col++;
+        }  
+        else if(c == ')') {
+            new_token.typ = 20;
+            col++;
+        }
+        else if(c == '=') {
             new_token.typ = 23;
+            col++;
         }
-        else if(strcmp(curr_string, "+") == 0) {
+        else if(c == '+') {
             new_token.typ = 29;
+            col++;
         }
-        else if(strcmp(curr_string, "-") == 0) {
+        else if(c == '-') {
             new_token.typ = 30;
+            col++;
         }
-        else if(strcmp(curr_string, "*") == 0) {
+        else if(c == '*') {
             new_token.typ = 31;
+            col++;
         }
-         else if(strcmp(curr_string, "/") == 0) {
+        else if(c == '/') {
             new_token.typ = 32;
-        }
+            col++;
+        }            
         else {
-                fprintf(stderr, "Err: Illegal token format...\n");
+            fprintf(stderr, "Err: Illegal token format...\n");
         }
     }
-
-            /*
-             -> ispunct() -> check next char with fgetc() -> if single, fputc() back into stream
-            \                                              \
-            \                                              \-> if <=, etc -> tokenize
-            \                                              \
-            \                                              \-> if # -> read until newline
-            \
-            \
-             -> is newline -> reset col count, increment row count
-            */
 }
 
 const char* lexer_filename()
