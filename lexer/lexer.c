@@ -34,14 +34,12 @@ int main(int argc, char * argv[])
 
 bool is_valid_short(int x)
 {
-    if ( (x >= SHRT_MIN) && (x <= SHRT_MAX) )
+    if ( (x >= SHRT_MIN) && (x <= SHRT_MAX) ) {
         return true;
-    else
-    {
-        fprintf(stderr, "Invalid short integer size.\n");
-        lexer_close();
-        exit(1);
     }
+
+    return false;
+   
 }
 
 char comments()
@@ -50,6 +48,10 @@ char comments()
     while (c != '\n')
         {
             c = fgetc(filePtr);
+            if((int)c == EOF)
+            {
+                lexical_error(fname, row, col, "File ended while reading comment!");
+            }
         }
         row++;
         col = 1;
@@ -239,6 +241,11 @@ token lexer_next()
             } 
         //if its an alpha char but not a reserved word, it must be an indentifier.
         else {
+                if(strlen(curr_string) > MAX_IDENT_LENGTH) {
+                    lexical_error(fname, row, col, "Identifier starting \"%s\" is too long", curr_string);
+                    lexer_close();
+                    exit(1);
+                }
                 new_token.typ = 21;
                 new_token.text = NULL;
                 new_token.text = realloc(new_token.text, (sizeof(char) * strlen(curr_string) + 1));
@@ -260,6 +267,11 @@ token lexer_next()
             new_token.line = lexer_line();
             new_token.filename = fname;
             return new_token;
+        }
+        else {
+            lexical_error(fname, row, col, "The value of %d is too large for a short!", converter);
+            lexer_close();
+            exit(1);
         }
     }
     if(ispunct(c) != 0)
@@ -329,7 +341,7 @@ token lexer_next()
                 col += 2;
             }
             else {
-                //lexical_error();
+                lexical_error(fname, row, col, "Expecting '=' after a colon, not '%c'", c, c);
             }
         }
         else if(c == '(') {
@@ -368,7 +380,7 @@ token lexer_next()
             col++;
         }            
         else {
-            fprintf(stderr, "Err: Illegal token format...\n");
+            lexical_error(fname, row, col, "Illegal character '%c' (%d)", c, c);
         }
         return new_token;
     }
