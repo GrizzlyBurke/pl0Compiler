@@ -71,6 +71,7 @@ char * string_builder()
         i++;
         c = fgetc(filePtr);
         
+        
     }
     if(c == '\n')
     {
@@ -157,10 +158,10 @@ token lexer_next()
 
     while (isspace(c) != 0)
     {
-        if( c == '\n')
+        if (c == '\n')
         {
-            col = 1;
             row++;
+            col = 1;
         }
         c = fgetc(filePtr);
         col++;
@@ -258,7 +259,6 @@ token lexer_next()
         ungetc(c, filePtr);
         curr_string = number_builder();
         int converter = strtol(curr_string, NULL, 10);
-        //printf("Converter: %d", converter);
         if(is_valid_short(converter))
         {
             new_token.typ = 22;
@@ -276,10 +276,6 @@ token lexer_next()
     }
     if(ispunct(c) != 0)
     {       
-        new_token.column = lexer_column();
-        new_token.line = lexer_line();
-        new_token.filename = fname;
-
          if(c == '<') {
 
             c = fgetc(filePtr);
@@ -382,11 +378,15 @@ token lexer_next()
         else {
             lexical_error(fname, row, col, "Illegal character '%c' (%d)", c, c);
         }
+        new_token.column = lexer_column();
+        new_token.line = lexer_line();
+        new_token.filename = fname;
         return new_token;
     }
     if ((int)c == EOF)
     {
         new_token.typ = 33;
+        col = 1;
         new_token.column = lexer_column();
         new_token.line = lexer_line();
         new_token.filename = fname;
