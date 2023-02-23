@@ -1,424 +1,414 @@
-// Mike Burke and Hagen Farrell
-// Homework 2: Lexical Analyzer
-
+/* $Id: lexer.c,v 1.10 2023/02/24 17:12:16 leavens Exp leavens $ */
 #include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
 #include <ctype.h>
 #include <limits.h>
-#include<string.h>
-#include<stdlib.h>
-#include "lexer.h"
 #include "token.h"
-#include "lexer_output.h"
 #include "utilities.h"
+#include "lexer.h"
+#include "reserved.h"
 
+// The input file
+static FILE *input_file = NULL;
+// The input file's name
+static const char *filename = NULL;
+// Is this token stream done (past EOF or error)?
+static bool done = true;
+// the line of the next token
+static unsigned int line;
+// the column of the next token
+static unsigned int column;
 
-// global variables for each function in lexer
-static const char * fname;
-static FILE * filePtr;
-static token new_token;
-unsigned int row = 1; 
-unsigned int col = 1;
-
-int main(int argc, char * argv[])
+// Check the lexer's invariant
+static void lexer_okay()
 {
-    // setting global filename
-    fname = argv[1];
-
-    // opening file 
-    
-    lexer_open(fname);
-    lexer_output();
-    lexer_close();
-
+    assert(done == (input_file == NULL));
+    assert(done == (filename == NULL));
 }
 
-bool is_valid_short(int x)
+// Initialize the lexer (i.e., its data structures)
+static void lexer_initialize()
 {
-    if ( (x >= SHRT_MIN) && (x <= SHRT_MAX) ) {
-        return true;
+    filename = NULL;
+    input_file = NULL;
+    done = true;
+    line = 1;
+    column = 1;
+    reserved_initialize();
+}
+
+// Requires: fname != NULL
+// Requires: fname is the name of a readable file
+// Initialize the lexer and start it reading
+// from the given file name
+void lexer_open(const char *fname)
+{
+    lexer_initialize();
+    input_file = fopen(fname, "r");
+    if (input_file == NULL) {
+	bail_with_error("Cannot open %s", fname);
     }
-
-    return false;
-   
-}
-
-// function consumes comments when encountering #, also catches unclosed comments
-char comments()
-{
-    char c = fgetc(filePtr);
-    while (c != '\n')
-        {
-            c = fgetc(filePtr);
-            if((int)c == EOF)
-            {
-                lexical_error(fname, row, col, "File ended while reading comment!");
-            }
-        }
-        row++;
-        col = 1;
-    return fgetc(filePtr);
-}
-
-// function creates string from fgetc() for use in reserved words and identifers
-char * string_builder()
-{
-    char c = fgetc(filePtr);
-    char * string = malloc(sizeof(char) * 50);
-    int i = 0;
-
-    while (isalpha(c) != 0 || isdigit(c) != 0)
-    {
-        string[i] = c;
-        col++;
-        i++;
-        c = fgetc(filePtr);
-        
-        
+    filename = fname;
+    done = feof(input_file);
+    if (done) {
+	input_file = NULL;
+	filename = NULL;
     }
-    if(c == '\n')
-    {
-        row++;
-        col = 1;
-        string[i] = '\0';
-        
-        return string;
-    }
-    ungetc(c, filePtr);
-    col--;
-    string[i] = '\0';
-
-    return string;
+    lexer_okay();
 }
 
-// opens lexer file pointer and checks for errors
-void lexer_open(const char* fname)
-{
-    filePtr = fopen(fname, "r");
-    if (filePtr == NULL)
-    {
-        fprintf(stderr, "File Pointer Error\n");
-        exit(1);
-    }
-}
-
-// closing filePtr when lexer_done() is true
+// Close the file the lexer is working on
+// and make this lexer be done
 void lexer_close()
 {
-    fclose(filePtr);
+    lexer_okay();
+    if (input_file != NULL) {
+	int rc = fclose(input_file);
+	if (rc == EOF) {
+	    bail_with_error("Cannot close %s!", filename);
+	}
+    }
+    input_file = NULL;
+    filename = NULL;
+    done = true;
+    lexer_okay();
 }
 
+// Is the lexer's token stream finished
+// (either past EOF or not open)?
 bool lexer_done()
 {
-    // checking file stream for end or null
-
-    char check = fgetc(filePtr);
-    if ( check == EOF || filePtr == NULL )
-    {
-        return true;
-    }
-    else
-    {
-        ungetc(check, filePtr);
-        return false;
-    }
+    return done;
 }
 
-// function builds string from fgetc() and passes string to be resolved into int
-char * number_builder()
+// the previous value of column,
+// for use in lexer_ungetchar
+static unsigned int last_column = 0;
+
+// Requires: input_file is readable
+// Return the next char in the input
+// updating line and column as appropriate
+// update last_column to the old value of column
+static char lexer_getchar()
 {
-    int i = 0;
-    char c = fgetc(filePtr);
-    char * string = malloc(sizeof(char) * 50);
-
-    while(isdigit(c) > 0)
-    {
-        string[i] = c;
-        i++;
-        col++;
-        c = fgetc(filePtr);
+    char c = getc(input_file);
+    last_column = column;
+    if (c == '\n') {
+	line++;
+	column=1;
+    } else {
+	column++;
     }
-
-    if(c == '\n')
-    {
-        row++;
-        col = 1;
-        string[i] = '\0';
-        return string;
-    }
-
-    ungetc(c, filePtr);
-    col--;
-    string[i] = '\0';
-
-    return string;
+    return c;
 }
 
-// primary logic of the lexical analyzer
-// checks isalpha, isdigit, ispunct with various sub cases for creating tokens
+// Requires: input_file is readable
+// Put c back into the input file stream
+// to be read again
+static void lexer_ungetchar(char c)
+{
+    column = last_column;
+    if (c == '\n') {
+	line--;
+    }
+    if (c != EOF) {
+	ungetc(c, input_file);
+    }
+}
+
+// forward declarations of lexical functions
+static void lexer_consume_ignored();
+static token lexer_ident(char c, token t);
+static token lexer_number(char c, token t);
+static token lexer_becomes(char c, token t);
+static token lexer_starts_less(char c, token t);
+static token lexer_starts_greater(char c, token t);
+
+// Requires: !lexer_done()
+// Return the next token in the input file,
+// advancing in the input
 token lexer_next()
-{   
-    char c = fgetc(filePtr);
-    char * curr_string;
-
-    // checking for whitespace and moving the input stream
-    while (isspace(c) != 0)
-    {
-        if (c == '\n')
-        {
-            row++;
-            col = 1;
-        }
-        c = fgetc(filePtr);
-        col++;
-    }
-    // checking for comment start and calling the comment removing function
-    while (c == '#')
-    {
-        c = comments();
-    }
-    // checking if the input starts with an alpha and then builds string for token
-    if(isalpha(c) != 0) 
-    {
-        ungetc(c, filePtr);
-
-        new_token.column = lexer_column();
-        new_token.line = lexer_line();
-        new_token.filename = fname;
-
-        curr_string = string_builder();
-
-        if (strcmp(curr_string, "const") == 0) { 
-                new_token.typ = 1;
-                new_token.text = "const";
-        }  
-        else if (strcmp(curr_string, "var") == 0) {
-                new_token.typ = 4;
-                new_token.text = "var";
-            } 
-        else if (strcmp(curr_string, "procedure") == 0) {
-                new_token.typ = 5;
-                new_token.text = "procedure";
-            } 
-        else if (strcmp(curr_string, "call") == 0) {
-                new_token.typ = 7;
-                new_token.text = "call";
-            } 
-        else if (strcmp(curr_string, "begin") == 0) {
-                new_token.typ = 8;
-                new_token.text = "begin";
-            } 
-        else if (strcmp(curr_string, "end") == 0) {
-                new_token.typ = 9;
-                new_token.text = "end";
-            } 
-        else if (strcmp(curr_string, "if") == 0) {
-                new_token.typ = 10;
-                new_token.text = "if";
-            } 
-        else if (strcmp(curr_string, "then") == 0) {
-                new_token.typ = 11;
-                new_token.text = "then";
-            } 
-        else if (strcmp(curr_string, "else") == 0) {
-                new_token.typ = 12;
-                new_token.text = "else";
-            } 
-        else if (strcmp(curr_string, "while") == 0) {
-                new_token.typ = 13;
-                new_token.text = "while";
-            } 
-        else if (strcmp(curr_string, "do") == 0) {
-                new_token.typ = 14;
-                new_token.text = "do";
-            } 
-        else if (strcmp(curr_string, "read") == 0) {
-                new_token.typ = 15;
-                new_token.text = "read";
-            } 
-        else if (strcmp(curr_string, "write") == 0) {
-                new_token.typ = 16;
-                new_token.text = "write";
-            } 
-        else if (strcmp(curr_string, "skip") == 0) {
-                new_token.typ = 17;
-                new_token.text = "skip";
-            } 
-        else if (strcmp(curr_string, "odd") == 0) {
-                new_token.typ = 18;
-                new_token.text = "odd";
-            } 
-        //if its an alpha char but not a reserved word, it must be an indentifier.
-        else {
-                if(strlen(curr_string) > MAX_IDENT_LENGTH) {
-                    lexical_error(fname, row, col, "Identifier starting \"%s\" is too long", curr_string);
-                    lexer_close();
-                    exit(1);
-                }
-                new_token.typ = 21;
-                new_token.text = NULL;
-                new_token.text = realloc(new_token.text, (sizeof(char) * strlen(curr_string) + 1));
-                new_token.text = curr_string;
-            }
-        return new_token;
-    }  
-    // checks if input stream has digit, creates number string, converts to int and checks
-    // if it is a valid short
-    if(isdigit(c) > 0) 
-    {
-        ungetc(c, filePtr);
-        curr_string = number_builder();
-        int converter = strtol(curr_string, NULL, 10);
-        if(is_valid_short(converter))
-        {
-            new_token.typ = 22;
-            new_token.value = converter;
-            new_token.column = lexer_column();
-            new_token.line = lexer_line();
-            new_token.filename = fname;
-            return new_token;
-        }
-        else {
-            lexical_error(fname, row, col, "The value of %d is too large for a short!", converter);
-            lexer_close();
-            exit(1);
-        }
-    }
-    // checks various punctuation cases and determine tokens for each
-    if(ispunct(c) != 0)
-    {       
-         if(c == '<') {
-
-            c = fgetc(filePtr);
-
-            if(c == '>') {
-                new_token.typ = 24;
-                new_token.text = "<>";
-                col += 2;
-            }
-            else if(c == '=') {
-                new_token.typ = 26;
-                new_token.text = "<=";
-                col += 2;
-            }
-            else {
-                ungetc(c, filePtr);
-                col++;
-                new_token.typ = 25;
-                new_token.text = "<";
-            }
-        }
-         else if(c == '>') {
-            
-            c = fgetc(filePtr);
-
-            if(c == '=') {
-                new_token.typ = 28;
-                new_token.text = ">=";
-                col += 2;
-            }
-            else {
-                ungetc(c, filePtr);
-                col++;
-                new_token.typ = 25;
-                new_token.text = ">";
-            }
-        }
-        else if(c == '.') {
-            new_token.typ = 0;
-            new_token.text = ".";
-            col++;
-        }
-        else if(c == ';') {
-            new_token.typ = 2;
-            new_token.text = ";";
-            col++;
-        }
-        else if(c == ',') {
-            new_token.typ = 3;
-            new_token.text = ",";
-            col++;
-        }
-        else if(c == ':') {
-
-            c = fgetc(filePtr);
-            if(c == '=') {
-                new_token.typ = 6;
-                new_token.text = ":=";
-                col += 2;
-            }
-            else {
-                lexical_error(fname, row, col, "Expecting '=' after a colon, not '%c'", c, c);
-            }
-        }
-        else if(c == '(') {
-            new_token.typ = 19;
-            new_token.text = "(";
-            col++;
-        }  
-        else if(c == ')') {
-            new_token.typ = 20;
-            new_token.text = ")";
-            col++;
-        }
-        else if(c == '=') {
-            new_token.typ = 23;
-            new_token.text = "=";
-            col++;
-        }
-        else if(c == '+') {
-            new_token.typ = 29;
-            new_token.text = "+";
-            col++;
-        }
-        else if(c == '-') {
-            new_token.typ = 30;
-            new_token.text = "-";
-            col++;
-        }
-        else if(c == '*') {
-            new_token.typ = 31;
-            new_token.text = "*";
-            col++;
-        }
-        else if(c == '/') {
-            new_token.typ = 32;
-            new_token.text = "/";
-            col++;
-        }            
-        else {
-            lexical_error(fname, row, col, "Illegal character '%c' (%d)", c, c);
-        }
-        new_token.column = lexer_column();
-        new_token.line = lexer_line();
-        new_token.filename = fname;
-        return new_token;
-    }
-    // checking for end of file
-    if ((int)c == EOF)
-    {
-        new_token.typ = 33;
-        col = 1;
-        new_token.column = lexer_column();
-        new_token.line = lexer_line();
-        new_token.filename = fname;
-        new_token.text = NULL;
-    }
-    return new_token;
-}
-
-// function returns lexer filename
-const char* lexer_filename()
 {
-    return fname;
+    token t;
+    t.filename = filename;
+    t.typ = eofsym;
+    t.text = NULL;
+    t.value = 0;
+
+    lexer_consume_ignored();
+
+    t.line = line;
+    t.column = column;
+
+    char c = lexer_getchar(input_file);
+    
+    // since we consumed all the whitespace
+    // c should not be a kind of space character
+    assert(!isspace(c));
+    
+    if (c == EOF) {
+	t.typ = eofsym;
+	t.text = NULL;
+	filename = NULL;
+	input_file = NULL;
+	done = true;
+	return t;
+    }
+    if (isalpha(c)) {
+	return lexer_ident(c, t);
+    } else if (isdigit(c)) {
+	return lexer_number(c, t);
+    } else {
+	// leave room in t.text for 2 chars of text
+	t.text = malloc(3 * sizeof(char));
+	if (t.text == NULL) {
+	    bail_with_error("Cannot allocate space for token text!");
+	}
+	t.text[0] = c;
+	t.text[1] = '\0';
+	switch (c) {
+	case '.':
+	    t.typ = periodsym;
+	    break;
+	case ';':
+	    t.typ = semisym;
+	    break;
+	case ',':
+	    t.typ = commasym;
+	    break;
+	case ':':
+	    return lexer_becomes(c, t);
+	case '=':
+	    t.typ = eqsym;
+	    break;
+	case '(':
+	    t.typ = lparensym;
+	    break;
+	case ')':
+	    t.typ = rparensym;
+	    break;
+	case '<':
+	    return lexer_starts_less(c, t);
+	    break;
+	case '>':
+	    return lexer_starts_greater(c, t);
+	    break;
+	case '+':
+	    t.typ = plussym;
+	    break;
+	case '-':
+	    t.typ = minussym;
+	    break;
+	case '*':
+	    t.typ = multsym;
+	    break;
+	case '/':
+	    t.typ = divsym;
+	    break;
+	default:
+	    lexical_error(filename, line, column-1,
+			  "Illegal character '%c' (0%o)",
+			   c, c);
+	    break;
+	}
+	return t;
+    }
 }
 
-// function returns lexer line
+// Requires: !lexer_done()
+// Return the name of the current file
+const char *lexer_filename()
+{
+    if (lexer_done()) {
+	bail_with_error("Asking for file name of done lexer!");
+    }
+    return filename;
+}
+
+// Requires: !lexer_done()
+// Return the line number of the next token
 unsigned int lexer_line()
 {
-    return row;
+    if (lexer_done()) {
+	bail_with_error("Asking for line of done lexer!");
+    }
+    return line;
 }
-// function returns lexer column
+
+// Requires: !lexer_done()
+// Return the column number of the next token
 unsigned int lexer_column()
 {
-    return col;
+    if (lexer_done()) {
+	bail_with_error("Asking for column of done lexer!");
+    }
+    return column;
+}
+
+// Requires: input_file is readable
+// Advance input_file to the next newline
+static void lexer_consume_comment()
+{
+    char c = lexer_getchar();
+    while (c != '\n' && c != EOF) {
+	c = lexer_getchar();
+    }
+    if (c == EOF) {
+	lexical_error(filename, line, column-1,
+		      "File ended while reading comment!");
+    }
+    // assert(c == '\n');
+}
+
+// Requires: input_file is readable
+// Advance in the input file until
+// the next char is the start of a token
+// that is not ignored
+// (i.e., not whitespace or a comment)
+static void lexer_consume_ignored()
+{
+    char c = lexer_getchar();
+    while (isspace(c) || c == '#') {
+	if (isspace(c)) {
+	    // ignore the whitespace char
+	    c = lexer_getchar();
+	} else if (c == '#') {
+	    lexer_consume_comment();
+	    c = lexer_getchar();
+	}
+    }
+    // assert(!isspace(c) && c != '#');
+    lexer_ungetchar(c);
+}
+
+// Requires: c is a letter
+// Return a token for a reserved word
+// or an identifier
+static token lexer_ident(char c, token t)
+{
+    char *text = malloc((MAX_IDENT_LENGTH+1)*sizeof(char));
+    if (text == NULL) {
+	bail_with_error("Cannot allocate space for identifier");
+    }
+    text[0] = c;
+    int n = 1;
+    c = lexer_getchar();
+    while (isalpha(c) || isdigit(c)) {
+	if (n >= MAX_IDENT_LENGTH) {
+	    text[n] = '\0';
+	    lexical_error(filename, t.line, t.column,
+			  "Identifier starting \"%s\" is too long!",
+			  text);
+	}
+	text[n] = c;
+	n++;
+	c = lexer_getchar();
+    }
+    // assert(!isalpha(c) && !isdigit(c));
+    text[n+1] = '\0';    
+    lexer_ungetchar(c);
+    t.text = text;
+    t.typ = reserved_type(text);
+    return t;
+}
+
+#define MAX_NUM_LENGTH 5
+
+// Requires: c is a digit
+// Return a token for a number
+static token lexer_number(char c, token t)
+{
+    char *text = malloc((MAX_NUM_LENGTH+1)*sizeof(char));
+    if (text == NULL) {
+	bail_with_error("Cannot allocate space for number");
+    }
+    text[0] = c;
+    int n = 1;
+    c = lexer_getchar();
+    while (isdigit(c)) {
+	if (n >= MAX_NUM_LENGTH) {
+	    text[n] = '\0';
+	    bail_with_error(filename, t.line, t.column,
+			    "Number starting \"%s\" is too long!",
+			    text);
+	}
+	text[n] = c;
+	n++;
+	c = lexer_getchar();
+    }
+    text[n+1] = '\0';
+    lexer_ungetchar(c);
+    t.text = text;
+    int val;
+    sscanf(text, "%d", &val);
+    if (val > SHRT_MAX) {
+	lexical_error(filename, t.line, t.column,
+		      "The value of %s is too large for a short!",
+		      text);
+    }
+    t.value = val;
+    t.typ = numbersym;
+    return t;
+}
+
+// Requires: c is a colon character (:)
+// Returns the token for a becomessym
+static token lexer_becomes(char c, token t)
+{
+    assert(c == ':');
+    c = lexer_getchar();
+    if (c != '=') {
+	lexical_error(filename, line, column-1,
+		      "Expecting '=' after a colon, not '%c'",
+		      c);
+    }
+    t.text[1] = c;
+    t.text[2] = '\0';
+    t.typ = becomessym;
+    return t;
+}
+
+// Requires: c is a less-than character (<)
+// Returns the token appropriate for the next char
+static token lexer_starts_less(char c, token t)
+{
+    assert(c == '<');
+    c = lexer_getchar();
+    t.text[1] = c;
+    t.text[2] = '\0';
+    switch (c) {
+    case '=':
+	t.typ = leqsym;
+	break;
+    case '>':
+	t.typ = neqsym;
+	break;
+    default:
+	t.text[1] = '\0';
+	lexer_ungetchar(c);
+	t.typ = lessym;
+	break;
+    }
+    return t;
+}
+
+static token lexer_starts_greater(char c, token t)
+{
+    assert(c == '>');
+    c = lexer_getchar();
+    t.text[1] = c;
+    t.text[2] = '\0';
+    switch (c) {
+    case '=':
+	t.typ = geqsym;
+	break;
+    default:
+	t.text[1] = '\0';
+	lexer_ungetchar(c);
+	t.typ = gtrsym;
+	break;
+    }
+    return t;
+
 }

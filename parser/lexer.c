@@ -1,9 +1,10 @@
-/* $Id: lexer.c,v 1.8 2023/02/12 19:34:41 leavens Exp leavens $ */
+/* $Id: lexer.c,v 1.10 2023/02/24 17:12:16 leavens Exp leavens $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <ctype.h>
 #include <limits.h>
+#include "token.h"
 #include "utilities.h"
 #include "lexer.h"
 #include "reserved.h"
@@ -62,9 +63,11 @@ void lexer_open(const char *fname)
 void lexer_close()
 {
     lexer_okay();
-    int rc = fclose(input_file);
-    if (rc == EOF) {
-	bail_with_error("Cannot close %s!", filename);
+    if (input_file != NULL) {
+	int rc = fclose(input_file);
+	if (rc == EOF) {
+	    bail_with_error("Cannot close %s!", filename);
+	}
     }
     input_file = NULL;
     filename = NULL;
