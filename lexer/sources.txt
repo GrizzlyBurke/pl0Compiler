@@ -1,1 +1,1 @@
-utilities.c token.c lexer.c lexer_output.c
+lexer_solution.c lexer_main.c lexer_output.c reserved.c token.c utilities.c
