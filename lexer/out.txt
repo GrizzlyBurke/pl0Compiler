@@ -1,2 +1,0 @@
-Tokens from file hw2-errtest5.pl0
-Number Name       Line Column Text/Value
