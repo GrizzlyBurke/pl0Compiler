@@ -148,6 +148,12 @@ static AST *parseReadStmt()
 // <write-stmt> ::= write <expr> ;
 static AST *parseWriteStmt()
 {
+    token writet = tok;
+    eat(writesym);
+    AST * expr = parseExpr();
+    eat(semisym);
+
+    return ast_write_stmt(writet, expr);
 
 }
 
