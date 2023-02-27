@@ -130,6 +130,8 @@ static AST * parseWhileStmt()
     AST * cond = parseCondition();
     eat(dosym);
     AST * s1 = parseStmt();
+
+    return ast_while_stmt(whilet, cond, s1);
 }
 
 // <read-stmt> ::= read <ident> ;
