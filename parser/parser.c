@@ -84,7 +84,7 @@ AST * parseStmt()
 // <assignment> ::= <ident> = <expr> ;
 static AST * parseAssignStmt()
 {
-    
+
 }
 
 // <begin-stmt> ::= '{' <stmt> { <stmt> } '}'
@@ -110,7 +110,11 @@ static AST *parseIfStmt()
 
 static AST * parseWhileStmt()
 {
-
+    token whilet = tok;
+    eat(whilesym);
+    AST * cond = parseCondition();
+    eat(dosym);
+    AST * s1 = parseStmt();
 }
 
 // <read-stmt> ::= read <ident> ;
