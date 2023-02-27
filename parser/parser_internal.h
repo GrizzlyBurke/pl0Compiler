@@ -24,6 +24,9 @@ static AST_list parseBeginStmt();
 // <if-stmt> ::= if ( <condition> ) <stmt>
 static AST *parseIfStmt();
 
+// <while-stmt> ::=
+static AST * parseWhileStmt();
+
 // <read-stmt> ::= read <ident> ;
 static AST *parseReadStmt();
 
