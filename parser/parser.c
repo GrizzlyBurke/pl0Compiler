@@ -84,16 +84,31 @@ AST * parseStmt()
 // <assignment> ::= <ident> = <expr> ;
 static AST * parseAssignStmt()
 {
-
+    token assignt = tok;
+    eat(identsym);
+    eat(becomessym);
+    AST * expr = parseExpr();
+    eat(semisym);
+    return ast_assign_stmt(tok, tok.text, expr);
 }
 
-// <begin-stmt> ::= '{' <stmt> { <stmt> } '}'
+// <begin-stmt> ::= <stmt> { <stmt> }
 static AST_list parseBeginStmt()
 {
-
+    token begint = tok;
+    eat(beginsym);
+    AST * s1 = parseStmt();
+    AST_list stmts = ast_list_singleton(s1);
+    while(tok.typ == semisym)
+    {
+        AST * s = parseStmt();
+        ast_list_splice(stmts, ast_list_singleton(s));
+    }
+    eat(endsym);
+    return ast_begin_stmt(begint, stmts);
 }
 
-// <if-stmt> ::= if ( <condition> ) <stmt>
+// <if-stmt> ::= if <condition> <stmt>
 static AST *parseIfStmt()
 {
     token ift = tok;
@@ -120,7 +135,12 @@ static AST * parseWhileStmt()
 // <read-stmt> ::= read <ident> ;
 static AST *parseReadStmt()
 {
-
+    token readt = tok;
+    eat(readsym);
+    const char * name = readt.text;
+    eat(identsym);
+    eat(semisym);
+    return ast_read_stmt(readt, name);
 }
 
 // <write-stmt> ::= write <expr> ;
