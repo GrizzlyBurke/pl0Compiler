@@ -160,6 +160,9 @@ static AST *parseWriteStmt()
 //
 static AST * parseSkipStmt()
 {
+    token skipt = tok;
+    eat(skipsym);
 
+    return ast_skip_stmt(skipt);
 }
 
