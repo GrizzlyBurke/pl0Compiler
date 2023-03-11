@@ -38,7 +38,7 @@ static void eat(token_type tt)
 {
     if (tok.typ == tt)
     {
-        advance();
+        advance();  
     }
     else
     {
@@ -166,3 +166,15 @@ static AST * parseSkipStmt()
     return ast_skip_stmt(skipt);
 }
 
+AST * parseCondition()
+{
+    switch (tok.typ)
+    {
+    case oddsym:
+        return parseStmt();
+        break;
+    
+    default:
+        break;
+    }
+}
