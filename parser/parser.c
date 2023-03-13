@@ -166,15 +166,42 @@ static AST * parseSkipStmt()
     return ast_skip_stmt(skipt);
 }
 
+/*condtion odd <expr> 
+the second procedure can be | <expr> <rel-op> <expr> */ 
 AST * parseCondition()
 {
     switch (tok.typ)
     {
     case oddsym:
-        return parseStmt();
+        return parseExpr();
         break;
-    
     default:
+    //print out error to stderr..
         break;
     }
+}
+
+AST * parseExpr()
+{
+    //next parseTerm needs to be called
+    //the difference between one term and many
+    //needs to be differentiated.
+}
+
+AST * parseTerm()
+{
+    //parseFactor needs to be called
+    //differentiate between mult-div-factor and factor
+}
+
+//this is setup for me to have a path to work on.
+
+AST * parseFactor()
+{
+
+}
+
+AST * parseMultDivFactor()
+{
+
 }
