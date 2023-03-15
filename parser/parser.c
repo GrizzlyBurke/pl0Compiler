@@ -234,6 +234,74 @@ AST * parseCondition()
 AST * parseExpr()
 {
     token fst = tok;
+    AST * exp;
+    switch(tok.typ)
+    {
+        case identsym:
+            eat(identsym);
+            switch(tok.typ)
+            {
+                case plussym:
+                    eat(plussym);
+                    exp = parseExpr();
+                    return ast_bin_expr();    
+                break;
+                case minussym:
+                    eat(minussym);
+                    exp = parseExpr();
+                
+                break;
+                case multsym:
+                    eat(multsym);
+                    exp = parseExpr();
+                
+                break;
+                case divsym:
+                    eat(divsym);
+                    exp = parseExpr();
+                
+                break;
+                case semisym:
+                    return ast_ident(fst, fst.text);
+                break;
+                default:
+                    //error
+            }
+        break;
+        case numbersym:
+            eat(numbersym);
+            switch(tok.typ)
+            {
+                case plussym:
+                    eat(plussym);
+                    exp = parseExpr();
+                    return ast_bin_expr();    
+                break;
+                case minussym:
+                    eat(minussym);
+                    exp = parseExpr();
+                
+                break;
+                case multsym:
+                    eat(multsym);
+                    exp = parseExpr();
+                
+                break;
+                case divsym:
+                    eat(divsym);
+                    exp = parseExpr();
+                
+                break;
+                case semisym:
+                    return ast_number(fst, fst.value);
+                break;
+                default:
+                    //error
+            }
+        break;
+        default:
+        break;
+    }
 }
 
 AST * parseTerm()
