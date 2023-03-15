@@ -47,7 +47,58 @@ static void eat(token_type tt)
     }
 }
 
-// <stmt> ::= <ident> = <expr> ; | ...
+
+// ⟨program⟩ ::= ⟨block⟩ .
+// ⟨block⟩ ::= ⟨const-decls⟩ ⟨var-decls⟩ ⟨stmt⟩
+AST * parseProgram()
+{
+    // ! REVISIT
+    token programt = tok;
+    AST_list cds = parseConstDecls();
+    AST_list vds = parseVarDecls();
+    AST * stmt = parseStmt();
+    eat(periodsym);
+
+    return ast_program(lexer_filename(), 0, 0, cds, vds, stmt);
+}
+
+// ⟨const-decls⟩ ::= {⟨const-decl⟩}
+// ⟨const-decl⟩ ::= const ⟨const-def⟩ {⟨comma-const-def⟩} ;
+// ⟨const-def⟩ ::= ⟨ident⟩ = ⟨number⟩
+// ⟨comma-const-def⟩ ::= , ⟨const-def⟩
+AST * parseConstDecls()
+{
+    // parse multiples consts: while loop
+}
+
+// ⟨var-decls⟩ ::= {⟨var-decl⟩}
+// ⟨var-decl⟩ ::= var ⟨idents⟩ ;
+// ⟨comma-ident⟩ ::= , ⟨ident⟩
+AST * parseVarDecls()
+{
+    // parse
+}
+
+// ⟨idents⟩ ::= ⟨ident⟩ {⟨comma-ident⟩}
+AST_list parseIdentExpr()
+{
+    token idtok = tok;
+    eat(identsym);
+
+    AST_list ret = ast_list_singleton(ast_var_decl(idtok, idtok.text));
+
+    while(tok.typ == commasym)
+    {
+        eat(commasym);
+        idtok = tok;
+        eat(identsym);
+        AST * ident = ast_var_decl(idtok, idtok.text);
+        ast_list_splice(ident, ret);
+    }
+    return  ret;
+}
+
+// <stmt> ::= <ident> := <expr> ; | ...
 AST * parseStmt()
 {
     switch(tok.typ)
@@ -81,7 +132,7 @@ AST * parseStmt()
     return (AST *) NULL;
 }
 
-// <assignment> ::= <ident> = <expr> ;
+// ⟨stmt⟩ ::= ⟨ident⟩ := ⟨expr⟩
 static AST * parseAssignStmt()
 {
     token assignt = tok;
@@ -92,7 +143,7 @@ static AST * parseAssignStmt()
     return ast_assign_stmt(tok, tok.text, expr);
 }
 
-// <begin-stmt> ::= <stmt> { <stmt> }
+// begin ⟨stmt⟩ {⟨semi-stmt⟩} end
 static AST_list parseBeginStmt()
 {
     token begint = tok;
@@ -108,7 +159,7 @@ static AST_list parseBeginStmt()
     return ast_begin_stmt(begint, stmts);
 }
 
-// <if-stmt> ::= if <condition> <stmt>
+// if ⟨condition⟩ then ⟨stmt⟩ else ⟨stmt⟩
 static AST *parseIfStmt()
 {
     token ift = tok;
@@ -123,6 +174,7 @@ static AST *parseIfStmt()
 
 }
 
+// while ⟨condition⟩ do ⟨stmt⟩
 static AST * parseWhileStmt()
 {
     token whilet = tok;
@@ -134,30 +186,28 @@ static AST * parseWhileStmt()
     return ast_while_stmt(whilet, cond, s1);
 }
 
-// <read-stmt> ::= read <ident> ;
+// read ⟨ident⟩
 static AST *parseReadStmt()
 {
     token readt = tok;
     eat(readsym);
     const char * name = readt.text;
     eat(identsym);
-    eat(semisym);
     return ast_read_stmt(readt, name);
 }
 
-// <write-stmt> ::= write <expr> ;
+// write ⟨expr⟩
 static AST *parseWriteStmt()
 {
     token writet = tok;
     eat(writesym);
     AST * expr = parseExpr();
-    eat(semisym);
 
     return ast_write_stmt(writet, expr);
 
 }
 
-//
+// skip
 static AST * parseSkipStmt()
 {
     token skipt = tok;
