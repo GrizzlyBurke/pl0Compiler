@@ -116,7 +116,7 @@ AST * parseStmt()
             return parseWhileStmt();
             break;
         case readsym:
-            return pareReadStmt();
+            return parseReadStmt();
             break;
         case writesym:
             return parseWriteStmt();
@@ -216,26 +216,24 @@ static AST * parseSkipStmt()
     return ast_skip_stmt(skipt);
 }
 
-/*condtion odd <expr> 
-the second procedure can be | <expr> <rel-op> <expr> */ 
 AST * parseCondition()
 {
-    switch (tok.typ)
-    {
-    case oddsym:
-        return parseExpr();
-        break;
-    default:
-    //print out error to stderr..
-        break;
+    token cond = tok;
+    if(tok.typ == oddsym) {
+        eat(oddsym);
+        AST * exp = parseExpr();
+         return ast_odd_cond(cond, exp);
+    } else {
+        AST * exp1 = parseExpr();
+        AST * relop = parseRelOpExpr();
+        AST * exp2 = parseExpr();
+        return ast_bin_cond(cond, exp1, relop, exp2);
     }
 }
 
 AST * parseExpr()
 {
-    //next parseTerm needs to be called
-    //the difference between one term and many
-    //needs to be differentiated.
+    token fst = tok;
 }
 
 AST * parseTerm()
