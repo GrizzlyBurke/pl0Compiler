@@ -259,6 +259,7 @@ AST * parseExpr()
 {
     token fst = tok;
     AST * exp;
+    bin_arith_op binop;
     switch(tok.typ)
     {
         case identsym:
@@ -268,7 +269,7 @@ AST * parseExpr()
                 case plussym:
                     eat(plussym);
                     exp = parseExpr();
-                    return ast_bin_expr();    
+                
                 break;
                 case minussym:
                     eat(minussym);
@@ -298,8 +299,9 @@ AST * parseExpr()
             {
                 case plussym:
                     eat(plussym);
+                    binop = addop;
                     exp = parseExpr();
-                    return ast_bin_expr();    
+                    return ast_op_expr(fst, binop, exp);    
                 break;
                 case minussym:
                     eat(minussym);
@@ -324,6 +326,7 @@ AST * parseExpr()
             }
         break;
         default:
+            
         break;
     }
 }
