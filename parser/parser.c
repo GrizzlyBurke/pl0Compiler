@@ -225,9 +225,33 @@ AST * parseCondition()
          return ast_odd_cond(cond, exp);
     } else {
         AST * exp1 = parseExpr();
-        AST * relop = parseRelOpExpr();
+        rel_op rel;
+        switch(tok.typ)
+        {
+            case eqsym:
+                rel = eqop;
+            break;
+            case neqsym:
+                rel = neqop;
+            break;
+            case lessym:
+                rel = ltop;
+            break;
+            case leqsym:
+                rel = leqop;
+            break;
+            case gtrsym:
+                rel = gtop;
+            break;
+            case geqsym:
+                rel = geqop;
+            break;
+            default:
+                //error
+            break;
+        }
         AST * exp2 = parseExpr();
-        return ast_bin_cond(cond, exp1, relop, exp2);
+        return ast_bin_cond(cond, exp1, rel, exp2);
     }
 }
 
