@@ -68,24 +68,26 @@ AST * parseProgram()
 // ⟨comma-const-def⟩ ::= , ⟨const-def⟩
 AST * parseConstDecls()
 {
-    token ct = tok;
     AST_list ret = ast_list_empty_list();
-    while (tok.typ = constsym)
+    while (tok.typ == constsym)
     {
         eat(constsym);
-        cdasts = parseConstants();
+        AST_list cdasts = parseConstants();
         eat(semisym);
-        ast_list_splice(cdasts, ret);
-    }
+        ast_list_splice(ret, cdasts);
 
-    return ast_const_def(ct, ct.text, ct.value);
+    }
+    return ret;
 }
 
 AST_list parseConsts()
 {
     token consttok = tok;
+    eat(identsym);
+    eat(eqsym);
+    eat(numbersym);
     AST_list ret = ast_list_singleton(ast_const_def(consttok, consttok.text, consttok.value));
-    while (tok.typ = commasym)
+    while (tok.typ == commasym)
     {
         eat(commasym);
         consttok = tok;
@@ -93,8 +95,8 @@ AST_list parseConsts()
         eat(eqsym);
         eat(numbersym);
 
-        AST * constast = ast_const_def(consttok, consttok.text, consttok.value);
-        ast_list_splice(constast, ret);
+        AST * const_ast = ast_const_def(consttok, consttok.text, consttok.value);
+        ast_list_splice(const_ast, ret);
     }
 
     return ret;
@@ -105,14 +107,16 @@ AST_list parseConsts()
 // ⟨comma-ident⟩ ::= , ⟨ident⟩
 AST * parseVarDecls()
 {
-    token vt = tok;
-    AST_list vds;
-    eat(varsym);
-    
-    vds = parseidents();
-    eat(semisym);
-    
+    AST_list ret = ast_list_empty_list();
+    while(tok.typ == varsym)
+    {
+        eat(varsym);
+        AST_list vdasts = parseIdents();
+        eat(semisym);
+        ast_list_splice(vdasts, ret);
+    }
 
+    return ret;
 }
 
 // ⟨idents⟩ ::= ⟨ident⟩ {⟨comma-ident⟩}
