@@ -62,6 +62,21 @@ AST * parseProgram()
     return ast_program(lexer_filename(), 0, 0, cds, vds, stmt);
 }
 
+static void add_AST_to_end(AST_list *head, AST_list *last, AST_list lst)
+{
+    if (ast_list_is_empty(*head))
+    {
+        *head = lst;
+        *last = ast_list_last_elem(lst);
+    }
+    else 
+    {
+        ast_list_splice(*last, lst);
+        *last = ast_list_last_elem(lst);
+    }
+
+}
+
 // ⟨const-decls⟩ ::= {⟨const-decl⟩}
 // ⟨const-decl⟩ ::= const ⟨const-def⟩ {⟨comma-const-def⟩} ;
 // ⟨const-def⟩ ::= ⟨ident⟩ = ⟨number⟩
@@ -69,12 +84,13 @@ AST * parseProgram()
 AST * parseConstDecls()
 {
     AST_list ret = ast_list_empty_list();
+    AST_list last = ast_list_empty_list();
     while (tok.typ == constsym)
     {
         eat(constsym);
         AST_list cdasts = parseConstants();
         eat(semisym);
-        ast_list_splice(ret, cdasts);
+        add_AST_to_end(&ret, &last, cdasts);
 
     }
     return ret;
@@ -108,12 +124,14 @@ AST_list parseConsts()
 AST * parseVarDecls()
 {
     AST_list ret = ast_list_empty_list();
+    AST_list last = ast_list_empty_list();
     while(tok.typ == varsym)
     {
         eat(varsym);
         AST_list vdasts = parseIdents();
         eat(semisym);
-        ast_list_splice(vdasts, ret);
+        add_AST_to_end(&ret, &last, vdasts);
+        
     }
 
     return ret;
@@ -294,6 +312,13 @@ AST * parseCondition()
         return ast_bin_cond(cond, exp1, rel, exp2);
     }
 }
+
+/*
+
+
+
+*/
+
 
 AST * parseExpr()
 {
