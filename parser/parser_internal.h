@@ -6,8 +6,8 @@
 // <float-or-bool>  ::= float | bool
 static AST_list parseVarDecls();
 
-// <idents> ::= <ident> { <comma-ident> }
-static AST_list parseIdents(var_type vt);
+
+static AST_list parseIdents();
 
 // can this token begin a statment?
 static bool is_stmt_beginning_token(token t);
@@ -32,13 +32,6 @@ static AST *parseReadStmt();
 
 // <write-stmt> ::= write <expr> ;
 static AST *parseWriteStmt();
-
-// Is the given token type one of those that can be used
-// as a relational operator?
-static bool is_relational_op(token_type tt);
-
-// Return the corresponding operator enum for the given token type
-static oper tt2oper(token_type tt);
 
 // <lterm> ::= ! <lfactor> | <lfactor>
 static AST *parseLTerm();
