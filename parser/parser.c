@@ -323,93 +323,90 @@ AST * parseCondition()
 AST * parseExpr()
 {
     token fst = tok;
-    AST * exp;
-    bin_arith_op binop;
+    AST * exp = parseTerm();
+    while(tok.typ == plussym || tok.typ == minussym)
+    {
+        AST * rght = parseAddSubTerm();
+        exp = ast_bin_expr(fst, exp, rght->data.op_expr.arith_op,
+                rght->data.op_expr.exp);
+    }
+    return exp;
+}
+
+AST * parseAddSubTerm()
+{
+    token opt = tok;
     switch(tok.typ)
     {
-        case identsym:
-            eat(identsym);
-            switch(tok.typ)
-            {
-                case plussym:
-                    eat(plussym);
-                    exp = parseExpr();
-                
-                break;
-                case minussym:
-                    eat(minussym);
-                    exp = parseExpr();
-                
-                break;
-                case multsym:
-                    eat(multsym);
-                    exp = parseExpr();
-                
-                break;
-                case divsym:
-                    eat(divsym);
-                    exp = parseExpr();
-                
-                break;
-                case semisym:
-                    return ast_ident(fst, fst.text);
-                break;
-                default:
-                    //error
-            }
+        case plussym:
+            eat(plussym);
+            AST * exp = parseTerm();
+            return ast_op_expr(opt, addop, exp);
         break;
-        case numbersym:
-            eat(numbersym);
-            switch(tok.typ)
-            {
-                case plussym:
-                    eat(plussym);
-                    binop = addop;
-                    exp = parseExpr();
-                    return ast_op_expr(fst, binop, exp);    
-                break;
-                case minussym:
-                    eat(minussym);
-                    exp = parseExpr();
-                
-                break;
-                case multsym:
-                    eat(multsym);
-                    exp = parseExpr();
-                
-                break;
-                case divsym:
-                    eat(divsym);
-                    exp = parseExpr();
-                
-                break;
-                case semisym:
-                    return ast_number(fst, fst.value);
-                break;
-                default:
-                    //error
-            }
+        case minussym:
+            eat(minussym);
+            AST * e = parseTerm();
+            return ast_op_expr(opt, subop, exp);
         break;
         default:
-            
+            token_type expected[2] = {plussym, minussym};
+            parse_error_unexpected(expected, 2, tok);
         break;
     }
+    return (AST *) NULL;
 }
 
 AST * parseTerm()
 {
-    //parseFactor needs to be called
-    //differentiate between mult-div-factor and factor
+    token fst = tok;
+    AST * fac = parseFactor();
+    AST * exp = fac;
+    while(tok.typ == multsym || tok.typ == divsym)
+    {
+        AST * rght = parseMultDivFactor();
+        exp = ast_bin_expr(fst, exp, rght->data.op_expr.arith_op,
+                rght->data.op_expr.exp);
+    }
+    return exp;
 }
 
 //this is setup for me to have a path to work on.
 
 AST * parseFactor()
 {
-
+    switch(tok.typ)
+    {
+        case identsym:
+            return parseIdentExpr();
+        break;
+        case numbersym:
+            return parseNumberExpr();
+        break;
+        //we need a case for multiple expressions.
+        default:
+        break;
+    }
 }
 
 AST * parseMultDivFactor()
 {
-
+    token opt = tok;
+    switch(tok.typ)
+    {
+        case multsym:
+            eat(multsym);
+            AST * exp = parseFactor();
+            return ast_op_expr(opt, multop, exp);
+        break;
+        case divsym:
+            eat(divsym);
+            AST * e = parseFactor();
+            return ast_op_expr(opt, divop, e);
+        break;
+        default:
+            token_type expected[2] = {multsym, divsym};
+            parse_error_unexpected(expected, 2, tok);
+        break;
+    }
+    return (AST *) NULL;
 }
