@@ -62,30 +62,48 @@ AST * parseProgram()
     return ast_program(lexer_filename(), 0, 0, cds, vds, stmt);
 }
 
+static void add_AST_to_end(AST_list *head, AST_list *last, AST_list lst)
+{
+    if (ast_list_is_empty(*head))
+    {
+        *head = lst;
+        *last = ast_list_last_elem(lst);
+    }
+    else 
+    {
+        ast_list_splice(*last, lst);
+        *last = ast_list_last_elem(lst);
+    }
+
+}
+
 // ⟨const-decls⟩ ::= {⟨const-decl⟩}
 // ⟨const-decl⟩ ::= const ⟨const-def⟩ {⟨comma-const-def⟩} ;
 // ⟨const-def⟩ ::= ⟨ident⟩ = ⟨number⟩
-// ⟨comma-const-def⟩ ::= , ⟨const-def⟩
+
 AST * parseConstDecls()
 {
-    token ct = tok;
     AST_list ret = ast_list_empty_list();
-    while (tok.typ = constsym)
+    AST_list last = ast_list_empty_list();
+    while (tok.typ == constsym)
     {
         eat(constsym);
-        cdasts = parseConstants();
+        AST_list cdasts = parseConstants();
         eat(semisym);
-        ast_list_splice(cdasts, ret);
-    }
+        add_AST_to_end(&ret, &last, cdasts);
 
-    return ast_const_def(ct, ct.text, ct.value);
+    }
+    return ret;
 }
 
 AST_list parseConsts()
 {
     token consttok = tok;
+    eat(identsym);
+    eat(eqsym);
+    eat(numbersym);
     AST_list ret = ast_list_singleton(ast_const_def(consttok, consttok.text, consttok.value));
-    while (tok.typ = commasym)
+    while (tok.typ == commasym)
     {
         eat(commasym);
         consttok = tok;
@@ -93,8 +111,8 @@ AST_list parseConsts()
         eat(eqsym);
         eat(numbersym);
 
-        AST * constast = ast_const_def(consttok, consttok.text, consttok.value);
-        ast_list_splice(constast, ret);
+        AST * const_ast = ast_const_def(consttok, consttok.text, consttok.value);
+        ast_list_splice(const_ast, ret);
     }
 
     return ret;
@@ -105,14 +123,18 @@ AST_list parseConsts()
 // ⟨comma-ident⟩ ::= , ⟨ident⟩
 AST * parseVarDecls()
 {
-    token vt = tok;
-    AST_list vds;
-    eat(varsym);
-    
-    vds = parseidents();
-    eat(semisym);
-    
+    AST_list ret = ast_list_empty_list();
+    AST_list last = ast_list_empty_list();
+    while(tok.typ == varsym)
+    {
+        eat(varsym);
+        AST_list vdasts = parseIdents();
+        eat(semisym);
+        add_AST_to_end(&ret, &last, vdasts);
+        
+    }
 
+    return ret;
 }
 
 // ⟨idents⟩ ::= ⟨ident⟩ {⟨comma-ident⟩}
@@ -290,6 +312,13 @@ AST * parseCondition()
         return ast_bin_cond(cond, exp1, rel, exp2);
     }
 }
+
+/*
+
+
+
+*/
+
 
 AST * parseExpr()
 {
