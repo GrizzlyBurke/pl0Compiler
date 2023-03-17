@@ -80,7 +80,7 @@ static void add_AST_to_end(AST_list *head, AST_list *last, AST_list lst)
 // ⟨const-decls⟩ ::= {⟨const-decl⟩}
 // ⟨const-decl⟩ ::= const ⟨const-def⟩ {⟨comma-const-def⟩} ;
 // ⟨const-def⟩ ::= ⟨ident⟩ = ⟨number⟩
-// ⟨comma-const-def⟩ ::= , ⟨const-def⟩
+
 AST * parseConstDecls()
 {
     AST_list ret = ast_list_empty_list();
