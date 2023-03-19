@@ -52,14 +52,26 @@ static void eat(token_type tt)
 // ⟨block⟩ ::= ⟨const-decls⟩ ⟨var-decls⟩ ⟨stmt⟩
 AST * parseProgram()
 {
+
     // ! REVISIT
-    token programt = tok;
     AST_list cds = parseConstDecls();
     AST_list vds = parseVarDecls();
     AST * stmt = parseStmt();
     eat(periodsym);
+    eat(eofsym);
 
-    return ast_program(lexer_filename(), 0, 0, cds, vds, stmt);
+    file_location floc;
+    if (!ast_list_is_empty(vds)) {
+	if (ast_list_first(vds)->type_tag == var_decl_ast) {
+	    floc = ast_list_first(vds)->file_loc;
+	} else {
+	    bail_with_error("Bad AST for var declarations");
+	}
+    } else {
+	floc = stmt->file_loc;
+    }
+
+    return ast_program(floc.filename, floc.line, floc.column, cds, vds, stmt);
 }
 
 static void add_AST_to_end(AST_list *head, AST_list *last, AST_list lst)
@@ -101,18 +113,22 @@ static AST_list parseConsts()
     token consttok = tok;
     eat(identsym);
     eat(eqsym);
+    consttok.value = tok.value;
     eat(numbersym);
+
     AST_list ret = ast_list_singleton(ast_const_def(consttok, consttok.text, consttok.value));
+    AST_list last = ret;
     while (tok.typ == commasym)
     {
         eat(commasym);
         consttok = tok;
         eat(identsym);
         eat(eqsym);
+        consttok.value = tok.value;
         eat(numbersym);
 
         AST * const_ast = ast_const_def(consttok, consttok.text, consttok.value);
-        ast_list_splice(const_ast, ret);
+        add_AST_to_end(&ret, &last, const_ast);
     }
 
     return ret;
@@ -144,16 +160,32 @@ static AST_list parseIdents()
     eat(identsym);
 
     AST_list ret = ast_list_singleton(ast_var_decl(idtok, idtok.text)); 
-
+    AST_list last = ret;
     while(tok.typ == commasym)
     {
         eat(commasym);
         idtok = tok;
         eat(identsym);
         AST * ident = ast_var_decl(idtok, idtok.text);
-        ast_list_splice(ident, ret);
+        add_AST_to_end(&ret, &last, ast_list_singleton(ident));
     }
     return  ret;
+}
+
+// the kinds of tokens that may begin a statement in pl0
+#define STMTBEGINTOKS 7
+static token_type can_begin_stmt[STMTBEGINTOKS] =
+	    {identsym, beginsym, ifsym, whilesym, readsym, writesym, skipsym};
+
+// can this token begin a statment?
+static bool is_stmt_beginning_token(token t)
+{
+    for (int i = 0; i < STMTBEGINTOKS; i++) {
+	if (t.typ == can_begin_stmt[i]) {
+	    return true;
+	}
+    }
+    return false;
 }
 
 // <stmt> ::= <ident> := <expr> ; | ...
@@ -197,7 +229,6 @@ static AST * parseAssignStmt()
     eat(identsym);
     eat(becomessym);
     AST * expr = parseExpr();
-    eat(semisym);
     return ast_assign_stmt(assignt, assignt.text, expr);
 }
 
@@ -206,15 +237,20 @@ static AST_list parseBeginStmt()
 {
     token begint = tok;
     eat(beginsym);
-    AST * s1 = parseStmt();
-    AST_list stmts = ast_list_singleton(s1);
+    AST_list stmts = ast_list_singleton(parseStmt());
+    AST_list last = stmts;
     while(tok.typ == semisym)
     {
-        AST * s = parseStmt();
-        ast_list_splice(stmts, ast_list_singleton(s));
+        eat(semisym);
+        while (is_stmt_beginning_token(tok)) 
+        {
+            AST *stmt = parseStmt();
+            add_AST_to_end(&stmts, &last, ast_list_singleton(stmt));
+        }
     }
     eat(endsym);
-    return ast_begin_stmt(begint, stmts);
+    AST *ret = ast_begin_stmt(begint, stmts);
+    return ret;
 }
 
 // if ⟨condition⟩ then ⟨stmt⟩ else ⟨stmt⟩
@@ -288,26 +324,33 @@ static AST * parseCondition()
         {
             case eqsym:
                 rel = eqop;
+                eat(eqsym);
             break;
             case neqsym:
                 rel = neqop;
+                eat(neqsym);
             break;
             case lessym:
                 rel = ltop;
+                eat(lessym);
             break;
             case leqsym:
                 rel = leqop;
+                eat(leqsym);
             break;
             case gtrsym:
                 rel = gtop;
+                eat(gtrsym);
             break;
             case geqsym:
                 rel = geqop;
+                eat(geqsym);
             break;
             default:
                 //error
             break;
         }
+        
         AST * exp2 = parseExpr();
         return ast_bin_cond(cond, exp1, rel, exp2);
     }
