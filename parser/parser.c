@@ -11,7 +11,7 @@ static unsigned int scope_offset;
 //opening parser to begin lexing, parsing, checking
 void parser_open(const char *filename)
 {
-    lexer_open(lexer_filename());
+    lexer_open(filename);
     tok = lexer_next();
     //scope_offset = 0;
 }

@@ -12,7 +12,7 @@
 
 int main(int argc, char * argv[])
 {
-    parser_open(argv[0]);
+    parser_open(argv[1]);
     AST * progast = parseProgram();
     parser_close();
     unparseProgram(stdout, progast);

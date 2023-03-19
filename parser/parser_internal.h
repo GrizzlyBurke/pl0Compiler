@@ -41,8 +41,6 @@ static AST * parseSkipStmt();
 
 static AST * parseCondition();
 
-static AST * parseExpr();
-
 static AST * parseAddSubTerm();
 
 static AST * parseTerm();
