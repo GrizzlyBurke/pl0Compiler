@@ -9,11 +9,15 @@ static AST_list parseVarDecls();
 
 static AST_list parseIdents();
 
-// can this token begin a statment?
-static bool is_stmt_beginning_token(token t);
+static void add_AST_to_end(AST_list *head, AST_list *last, AST_list lst);
+
 
 // <stmt> ::= <ident> = <expr> ; | ...
-AST *parseStmt();
+AST * parseStmt();
+
+static AST * parseConstDecls();
+
+static AST_list parseConsts();
 
 // <assignment> ::= <ident> = <expr> ;
 static AST *parseAssignStmt();
@@ -33,31 +37,22 @@ static AST *parseReadStmt();
 // <write-stmt> ::= write <expr> ;
 static AST *parseWriteStmt();
 
-// <lterm> ::= ! <lfactor> | <lfactor>
-static AST *parseLTerm();
+static AST * parseSkipStmt();
 
-// <rel-op-expr> ::= <rel-op> <lterm>
-// This returns an op_expr AST
-static AST *parseRelOpExpr();
+static AST * parseCondition();
 
-// <lfactor> ::= <term> { <add-sub-term> }
-static AST *parseLFactor();
+static AST * parseExpr();
 
-// <add-sub-term> ::= <add-sub> <term>
-static AST *parseAddSubTerm();
+static AST * parseAddSubTerm();
 
-// <term> ::= <factor> { <mult-div-factor> }
-// Return an AST with the operators (if any) associating to the left
-static AST *parseTerm();
+static AST * parseTerm();
 
-// <mult-div-factor> ::= <mult-div> <factor>
-static AST *parseMultDivFactor();
+static AST * parseFactor();
 
-// <factor> ::= <ident> | <paren-expr> | <signed-number>
-static AST *parseFactor();
+static AST * parseIdentExpr();
 
-// Return an AST for an identifier use
-static AST *parseIdentExpr();
+static AST * parseNumberExpr();
 
-// Return an AST for a numeric literal
-static AST *parseNumberExpr();
+static AST * parseParenExpr();
+
+static AST * parseMultDivFactor();

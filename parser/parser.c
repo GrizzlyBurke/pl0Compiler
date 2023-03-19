@@ -9,7 +9,7 @@ static token tok;
 static unsigned int scope_offset;
 
 //opening parser to begin lexing, parsing, checking
-void parser_open()
+void parser_open(const char *filename)
 {
     lexer_open(lexer_filename());
     tok = lexer_next();
@@ -81,14 +81,14 @@ static void add_AST_to_end(AST_list *head, AST_list *last, AST_list lst)
 // ⟨const-decl⟩ ::= const ⟨const-def⟩ {⟨comma-const-def⟩} ;
 // ⟨const-def⟩ ::= ⟨ident⟩ = ⟨number⟩
 
-AST * parseConstDecls()
+static AST * parseConstDecls()
 {
     AST_list ret = ast_list_empty_list();
     AST_list last = ast_list_empty_list();
     while (tok.typ == constsym)
     {
         eat(constsym);
-        AST_list cdasts = parseConstants();
+        AST_list cdasts = parseConsts();
         eat(semisym);
         add_AST_to_end(&ret, &last, cdasts);
 
@@ -96,7 +96,7 @@ AST * parseConstDecls()
     return ret;
 }
 
-AST_list parseConsts()
+static AST_list parseConsts()
 {
     token consttok = tok;
     eat(identsym);
@@ -121,7 +121,7 @@ AST_list parseConsts()
 // ⟨var-decls⟩ ::= {⟨var-decl⟩}
 // ⟨var-decl⟩ ::= var ⟨idents⟩ ;
 // ⟨comma-ident⟩ ::= , ⟨ident⟩
-AST * parseVarDecls()
+static AST * parseVarDecls()
 {
     AST_list ret = ast_list_empty_list();
     AST_list last = ast_list_empty_list();
@@ -138,7 +138,7 @@ AST * parseVarDecls()
 }
 
 // ⟨idents⟩ ::= ⟨ident⟩ {⟨comma-ident⟩}
-AST_list parseIdents()
+static AST_list parseIdents()
 {
     token idtok = tok;
     eat(identsym);
@@ -198,7 +198,7 @@ static AST * parseAssignStmt()
     eat(becomessym);
     AST * expr = parseExpr();
     eat(semisym);
-    return ast_assign_stmt(tok, tok.text, expr);
+    return ast_assign_stmt(assignt, assignt.text, expr);
 }
 
 // begin ⟨stmt⟩ {⟨semi-stmt⟩} end
@@ -274,7 +274,7 @@ static AST * parseSkipStmt()
     return ast_skip_stmt(skipt);
 }
 
-AST * parseCondition()
+static AST * parseCondition()
 {
     token cond = tok;
     if(tok.typ == oddsym) {
@@ -333,7 +333,7 @@ AST * parseExpr()
     return exp;
 }
 
-AST * parseAddSubTerm()
+static AST * parseAddSubTerm()
 {
     token opt = tok;
     switch(tok.typ)
@@ -356,7 +356,7 @@ AST * parseAddSubTerm()
     return (AST *) NULL;
 }
 
-AST * parseTerm()
+static AST * parseTerm()
 {
     token fst = tok;
     AST * fac = parseFactor();
@@ -372,12 +372,15 @@ AST * parseTerm()
 
 //this is setup for me to have a path to work on.
 
-AST * parseFactor()
+static AST * parseFactor()
 {
     switch(tok.typ)
     {
         case identsym:
             return parseIdentExpr();
+        break;
+        case lparensym:
+            return parseParenExpr();
         break;
         case numbersym:
             return parseNumberExpr();
@@ -388,7 +391,32 @@ AST * parseFactor()
     }
 }
 
-AST * parseMultDivFactor()
+static AST * parseIdentExpr()
+{
+    token idt = tok;
+    eat(identsym);
+    return ast_ident(idt, idt.text);
+}
+
+static AST * parseNumberExpr()
+{
+    token numbt = tok;
+    eat(numbersym);
+    double val = numbt.value;
+    return ast_number(numbt, val);
+}
+
+static AST * parseParenExpr()
+{
+    token lpt = tok;
+    eat(lparensym);
+    AST * ret = parseExpr();
+    eat(rparensym);
+    ret->file_loc = token2file_loc(lpt);
+    return ret;
+}
+
+static AST * parseMultDivFactor()
 {
     token opt = tok;
     switch(tok.typ)
