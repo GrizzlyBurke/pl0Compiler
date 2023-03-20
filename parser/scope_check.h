@@ -52,9 +52,9 @@ extern void scope_check_readStmt(AST *stmt);
 // (if not, then produce an error)
 extern void scope_check_writeStmt(AST *stmt);
 
-extern void scope_check_skipStmt(AST *stmt);
+extern void scope_check_oddCond(AST * cond);
 
-extern void scope_check_Condition(AST * cond);
+extern void scope_check_binCond(AST * cond);
 
 // check the expresion to make sure that
 // all idenfifiers referenced in it have been declared
@@ -69,5 +69,7 @@ extern void scope_check_ident(file_location floc, const char *name);
 // all idenfifiers referenced in it have been declared
 // (if not, then produce an error)
 extern void scope_check_bin_expr(AST *exp);
+
+extern void scope_check_op_expr(AST *exp);
 
 #endif
