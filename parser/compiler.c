@@ -9,6 +9,7 @@
 #include "ast.h"
 #include "utilities.h"
 #include "unparser.h"
+#include "symbol_table.h"
 
 int main(int argc, char * argv[])
 {
@@ -17,4 +18,6 @@ int main(int argc, char * argv[])
     parser_close();
     unparseProgram(stdout, progast);
 
+    scope_initialize();
+    scope_check_program(progast);
 }
