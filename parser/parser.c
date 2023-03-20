@@ -285,7 +285,7 @@ static AST *parseReadStmt()
 {
     token readt = tok;
     eat(readsym);
-    const char * name = readt.text;
+    const char * name = tok.text;
     eat(identsym);
     return ast_read_stmt(readt, name);
 }
