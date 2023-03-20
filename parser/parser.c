@@ -180,11 +180,14 @@ static token_type can_begin_stmt[STMTBEGINTOKS] =
 // can this token begin a statment?
 static bool is_stmt_beginning_token(token t)
 {
-    for (int i = 0; i < STMTBEGINTOKS; i++) {
-	if (t.typ == can_begin_stmt[i]) {
-	    return true;
-	}
+    for (int i = 0; i < STMTBEGINTOKS; i++) 
+    {
+	    if (t.typ == can_begin_stmt[i]) 
+        {
+	        return true;
+	    }
     }
+    
     return false;
 }
 
@@ -215,7 +218,7 @@ AST * parseStmt()
             return parseSkipStmt();
             break;
         default:
-            token expected [7] = {identsym, beginsym, ifsym, whilesym, readsym, writesym, skipsym};
+            token_type expected [7] = {identsym, beginsym, ifsym, whilesym, readsym, writesym, skipsym};
             parse_error_unexpected(expected, 7, tok);
             break;
     }
@@ -242,11 +245,9 @@ static AST_list parseBeginStmt()
     while(tok.typ == semisym)
     {
         eat(semisym);
-        while (is_stmt_beginning_token(tok)) 
-        {
-            AST *stmt = parseStmt();
-            add_AST_to_end(&stmts, &last, ast_list_singleton(stmt));
-        }
+        AST *stmt = parseStmt();
+        add_AST_to_end(&stmts, &last, ast_list_singleton(stmt));
+        
     }
     eat(endsym);
     AST *ret = ast_begin_stmt(begint, stmts);
