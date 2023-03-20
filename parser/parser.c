@@ -427,12 +427,15 @@ static AST * parseFactor()
             return parseParenExpr();
         break;
         case numbersym:
-            return parseNumberExpr();
+            return parseNumberExpr(1);
+        break;
+        case minussym:
+            return parseNumberExpr(0);
         break;
         //we need a case for multiple expressions.
         default:
-            token_type expected[3] = {identsym, lparensym, numbersym};
-	        parse_error_unexpected(expected, 3, tok);
+            token_type expected[4] = {identsym, lparensym, numbersym, minussym};
+	        parse_error_unexpected(expected, 4, tok);
         break;
     }
 }
@@ -444,11 +447,19 @@ static AST * parseIdentExpr()
     return ast_ident(idt, idt.text);
 }
 
-static AST * parseNumberExpr()
+static AST * parseNumberExpr(int flag)
 {
+    if (flag == 0)
+    {
+        eat(minussym);
+    }
     token numbt = tok;
     eat(numbersym);
     double val = numbt.value;
+    if (flag == 0)
+    {
+        val = -val;
+    }
     return ast_number(numbt, val);
 }
 
