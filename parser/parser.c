@@ -379,16 +379,17 @@ AST * parseExpr()
 static AST * parseAddSubTerm()
 {
     token opt = tok;
+    AST * exp;
     switch(tok.typ)
     {
         case plussym:
             eat(plussym);
-            AST * exp = parseTerm();
+            exp = parseTerm();
             return ast_op_expr(opt, addop, exp);
         break;
         case minussym:
             eat(minussym);
-            AST * e = parseTerm();
+            exp = parseTerm();
             return ast_op_expr(opt, subop, exp);
         break;
         default:
@@ -430,6 +431,8 @@ static AST * parseFactor()
         break;
         //we need a case for multiple expressions.
         default:
+            token_type expected[3] = {identsym, lparensym, numbersym};
+	        parse_error_unexpected(expected, 3, tok);
         break;
     }
 }
