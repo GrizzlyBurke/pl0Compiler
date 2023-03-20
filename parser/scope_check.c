@@ -18,5 +18,5 @@ void scope_check_program(AST * prog)
 
 static void add_ident_to_scope(const char * name, file_location floc)
 {
-    id_attrs * attrs = scope_lookup(name)
+    id_attrs * attrs = scope_lookup(name);
 }
