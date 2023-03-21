@@ -199,8 +199,10 @@ AST * parseStmt()
             return parseSkipStmt();
             break;
         default:
+            {
             token_type expected [7] = {identsym, beginsym, ifsym, whilesym, readsym, writesym, skipsym};
             parse_error_unexpected(expected, 7, tok);
+            }
             break;
     }
     return (AST *) NULL;
@@ -375,8 +377,10 @@ static AST * parseAddSubTerm()
             return ast_op_expr(opt, subop, exp);
         break;
         default:
+        {
             token_type expected[2] = {plussym, minussym};
             parse_error_unexpected(expected, 2, tok);
+        }
         break;
     }
     return (AST *) NULL;
@@ -416,8 +420,10 @@ static AST * parseFactor()
         break;
         //we need a case for multiple expressions.
         default:
+        {
             token_type expected[4] = {identsym, lparensym, numbersym, minussym};
 	        parse_error_unexpected(expected, 4, tok);
+        }
         break;
     }
 }
@@ -471,8 +477,10 @@ static AST * parseMultDivFactor()
             return ast_op_expr(opt, divop, e);
         break;
         default:
+        {
             token_type expected[2] = {multsym, divsym};
             parse_error_unexpected(expected, 2, tok);
+        }
         break;
     }
     return (AST *) NULL;
