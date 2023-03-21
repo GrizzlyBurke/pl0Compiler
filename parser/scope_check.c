@@ -112,14 +112,14 @@ void scope_check_beginStmt(AST *stmt)
 
 void scope_check_ifStmt(AST *stmt)
 {
-    scope_check_expr(stmt->data.if_stmt.cond);
+    scope_check_cond(stmt->data.if_stmt.cond);
     scope_check_stmt(stmt->data.if_stmt.thenstmt);
     scope_check_stmt(stmt->data.if_stmt.elsestmt);
 }
 
 void scope_check_whileStmt(AST *stmt)
 {
-    scope_check_expr(stmt->data.while_stmt.cond);
+    scope_check_cond(stmt->data.while_stmt.cond);
     scope_check_stmt(stmt->data.while_stmt.stmt);
 }
 
@@ -133,16 +133,27 @@ void scope_check_writeStmt(AST *stmt)
     scope_check_expr(stmt->data.write_stmt.exp);
 }
 
+void scope_check_cond(AST * cond)
+{
+    switch(cond->type_tag)
+    {
+        case odd_cond_ast:
+            scope_check_oddCond(cond);
+            break;
+        case bin_cond_ast:
+            scope_check_binCond(cond);
+            break;
+        default:
+            bail_with_error("Unexpected type_tag (%d) in cond (for line %d, column %d)!",
+                cond->type_tag, cond->file_loc.line, cond->file_loc.column);
+
+    }
+}
+
 void scope_check_expr(AST * exp)
 {
     switch(exp->type_tag)
     {
-        case odd_cond_ast:
-            scope_check_oddCond(exp);
-            break;
-        case bin_cond_ast:
-            scope_check_binCond(exp);
-            break;
         case op_expr_ast:
             scope_check_op_expr(exp);
             break;

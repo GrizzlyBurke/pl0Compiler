@@ -52,6 +52,8 @@ extern void scope_check_readStmt(AST *stmt);
 // (if not, then produce an error)
 extern void scope_check_writeStmt(AST *stmt);
 
+extern void scope_check_cond(AST * cond);
+
 extern void scope_check_oddCond(AST * cond);
 
 extern void scope_check_binCond(AST * cond);
