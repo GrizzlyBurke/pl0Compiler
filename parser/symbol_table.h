@@ -23,12 +23,11 @@ extern bool scope_full();
 // Is the given name associated with some attributes in the current scope?
 extern bool scope_defined(const char *name);
 
-// Requires: !scope_defined(name) && attrs != NULL;
 // Modify the current scope symbol table to
 // add an association from the given name to the given id_attrs attrs.
 extern void scope_insert(const char *name, id_attrs *attrs);
 
-// Return (a pointer to) the attributes of the given name in the current scope
+// Return the attributes of the given name in the current scope
 // or NULL if there is no association for name.
 extern id_attrs *scope_lookup(const char *name);
 
