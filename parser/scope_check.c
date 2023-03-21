@@ -165,6 +165,7 @@ void scope_check_expr(AST * exp)
             break;
         case ident_ast:
             scope_check_ident(exp->file_loc, exp->data.ident.name);
+            break;
         default:
             bail_with_error("Unexpected type_tag (%d) in scope_check_expr (for line %d, column %d)!",
                 exp->type_tag, exp->file_loc.line, exp->file_loc.column);
