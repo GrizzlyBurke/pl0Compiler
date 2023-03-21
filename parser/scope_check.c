@@ -21,7 +21,9 @@ static void add_ident_to_scope(const char * name, id_kind k, file_location floc)
     id_attrs * attrs = scope_lookup(name);
     if (attrs != NULL)
     {
-        //error something here
+        general_error(floc,
+		      "%s \"%s\" is already declared as a %s",
+		      kind2str(k), name, kind2str(attrs->kind));
     }
     scope_insert(name, create_id_attrs(floc, k, scope_size()));
 }
@@ -85,7 +87,6 @@ void scope_check_stmt(AST* stmt)
             scope_check_writeStmt(stmt);
             break;
         case skip_ast:
-            scope_check_skipStmt(stmt);
             break;
         default:
             bail_with_error("Call to scope_check_stmt with an AST that is not a statement!");
@@ -197,6 +198,6 @@ void scope_check_ident(file_location floc, const char *name)
 {
     if(!scope_defined(name))
     {
-        general_error(floc, "identifier \"%s\" is not declared!", name);
+        general_error(floc, "identifer \"%s\" is not declared!", name);
     }
 }

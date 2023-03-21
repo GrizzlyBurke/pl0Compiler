@@ -4,6 +4,7 @@
 #include <string.h>
 #include <assert.h>
 #include "symbol_table.h"
+#include "scope_check.h"
 #include "utilities.h"
 
 typedef struct {

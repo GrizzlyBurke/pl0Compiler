@@ -172,25 +172,6 @@ static AST_list parseIdents()
     return  ret;
 }
 
-// the kinds of tokens that may begin a statement in pl0
-#define STMTBEGINTOKS 7
-static token_type can_begin_stmt[STMTBEGINTOKS] =
-	    {identsym, beginsym, ifsym, whilesym, readsym, writesym, skipsym};
-
-// can this token begin a statment?
-static bool is_stmt_beginning_token(token t)
-{
-    for (int i = 0; i < STMTBEGINTOKS; i++) 
-    {
-	    if (t.typ == can_begin_stmt[i]) 
-        {
-	        return true;
-	    }
-    }
-    
-    return false;
-}
-
 // <stmt> ::= <ident> := <expr> ; | ...
 AST * parseStmt()
 {

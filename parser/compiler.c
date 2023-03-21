@@ -19,6 +19,6 @@ int main(int argc, char * argv[])
     parser_close();
     unparseProgram(stdout, progast);
 
-    //scope_initialize();
-    //scope_check_program(progast);
+    scope_initialize();
+    scope_check_program(progast);
 }
