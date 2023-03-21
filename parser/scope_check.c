@@ -51,7 +51,7 @@ void scope_check_varDecls(AST_list vds)
 {
     while(!ast_list_is_empty(vds))
     {
-        scope_check_constDecl(ast_list_first(vds));
+        scope_check_varDecl(ast_list_first(vds));
         vds = ast_list_rest(vds);
     }
 }
