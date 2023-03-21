@@ -8,13 +8,21 @@ extern void parser_open(const char *filename);
 // finish using the parser
 extern void parser_close();
 
-// <program> ::= <var-decls> <stmt>
+// Return an AST representing our pl0 program
+// ⟨program⟩ ::= ⟨block⟩ .
+// ⟨block⟩ ::= ⟨const-decls⟩ ⟨var-decls⟩ ⟨stmt⟩
 extern AST *parseProgram();
 
-// <stmt> ::= <ident> = <expr> ; | ...
+// Return an AST using the below grammar
+// ⟨stmt⟩ ::= ⟨ident⟩ := ⟨expr⟩
+// | begin ⟨stmt⟩ {⟨semi-stmt⟩} end
+// | if ⟨condition⟩ then ⟨stmt⟩ else ⟨stmt⟩
+// | while ⟨condition⟩ do ⟨stmt⟩
+// | read ⟨ident⟩
+// | write ⟨expr⟩
+// | skip.
 extern AST *parseStmt();
 
 // Return an AST with the operators (if any) associating to the left
-// <expr> ::= <lterm> <rel-op-lterm>
-// <rel-op-lterm> ::= <empty> | <rel=op-expr>
+// ⟨expr⟩ ::= ⟨term⟩ {⟨add-sub-term⟩}
 extern AST *parseExpr();

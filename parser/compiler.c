@@ -1,3 +1,7 @@
+// Mike Burke and Hagen Farrell
+// COP3402 Leavens System Software
+// Homework 3: Parser and Declaration Checker
+
 // main runner functions for parsing and declaration checking
 
 #include <stdio.h>

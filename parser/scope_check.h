@@ -1,4 +1,3 @@
-/* $Id: scope_check.h,v 1.2 2023/02/22 03:33:43 leavens Exp $ */
 #ifndef _SCOPE_CHECK_H
 #define _SCOPE_CHECK_H
 #include "ast.h"
@@ -8,8 +7,12 @@
 // or uses of identifiers that were not declared
 extern void scope_check_program(AST *prog);
 
+// build the symbol table and check the declarations in cds
 extern void scope_check_constDecls(AST * cds);
 
+// check the const declaration cd
+// and add it to the current scope's symbol table
+// or produce an error if the name has already been declare
 extern void scope_check_constDecl(AST * cd);
 
 // build the symbol table and check the declarations in vds
@@ -52,13 +55,22 @@ extern void scope_check_readStmt(AST *stmt);
 // (if not, then produce an error)
 extern void scope_check_writeStmt(AST *stmt);
 
+// check the condition to make sure that
+// all idenfifiers referenced in it have been declared
+// (if not, then produce an error)
 extern void scope_check_cond(AST * cond);
 
+// check the condition to make sure that
+// all idenfifiers referenced in it have been declared
+// (if not, then produce an error)
 extern void scope_check_oddCond(AST * cond);
 
+// check the condition to make sure that
+// all idenfifiers referenced in it have been declared
+// (if not, then produce an error)
 extern void scope_check_binCond(AST * cond);
 
-// check the expresion to make sure that
+// check the expression (exp) to make sure that
 // all idenfifiers referenced in it have been declared
 // (if not, then produce an error)
 extern void scope_check_expr(AST *exp);
@@ -72,6 +84,9 @@ extern void scope_check_ident(file_location floc, const char *name);
 // (if not, then produce an error)
 extern void scope_check_bin_expr(AST *exp);
 
+// check the expression (exp) to make sure that
+// all idenfifiers referenced in it have been declared
+// (if not, then produce an error)
 extern void scope_check_op_expr(AST *exp);
 
 #endif

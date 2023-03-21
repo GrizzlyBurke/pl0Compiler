@@ -1,3 +1,10 @@
+// Mike Burke and Hagen Farrell
+// COP3402 Leavens System Software
+// Homework 3: Parser and Declaration Checker
+
+// performs AST based recursive parsing of a subset of the pl0 language
+// grammar for parser is contained in the comments above each function
+
 #include <stdio.h>
 #include "lexer.h"
 #include "id_attrs.h"
@@ -52,8 +59,6 @@ static void eat(token_type tt)
 // ⟨block⟩ ::= ⟨const-decls⟩ ⟨var-decls⟩ ⟨stmt⟩
 AST * parseProgram()
 {
-
-    // ! REVISIT
     AST_list cds = parseConstDecls();
     AST_list vds = parseVarDecls();
     AST * stmt = parseStmt();
@@ -74,6 +79,7 @@ AST * parseProgram()
     return ast_program(floc.filename, floc.line, floc.column, cds, vds, stmt);
 }
 
+// adds a given AST to the end of the current list.
 static void add_AST_to_end(AST_list *head, AST_list *last, AST_list lst)
 {
     if (ast_list_is_empty(*head))
@@ -90,9 +96,6 @@ static void add_AST_to_end(AST_list *head, AST_list *last, AST_list lst)
 }
 
 // ⟨const-decls⟩ ::= {⟨const-decl⟩}
-// ⟨const-decl⟩ ::= const ⟨const-def⟩ {⟨comma-const-def⟩} ;
-// ⟨const-def⟩ ::= ⟨ident⟩ = ⟨number⟩
-
 static AST * parseConstDecls()
 {
     AST_list ret = ast_list_empty_list();
@@ -108,6 +111,8 @@ static AST * parseConstDecls()
     return ret;
 }
 
+// ⟨const-decl⟩ ::= const ⟨const-def⟩ {⟨comma-const-def⟩} ;
+// ⟨const-def⟩ ::= ⟨ident⟩ = ⟨number⟩
 static AST_list parseConsts()
 {
     token consttok = tok;
@@ -135,8 +140,6 @@ static AST_list parseConsts()
 }
 
 // ⟨var-decls⟩ ::= {⟨var-decl⟩}
-// ⟨var-decl⟩ ::= var ⟨idents⟩ ;
-// ⟨comma-ident⟩ ::= , ⟨ident⟩
 static AST * parseVarDecls()
 {
     AST_list ret = ast_list_empty_list();
@@ -153,6 +156,8 @@ static AST * parseVarDecls()
     return ret;
 }
 
+// ⟨var-decl⟩ ::= var ⟨idents⟩ ;
+// ⟨comma-ident⟩ ::= , ⟨ident⟩
 // ⟨idents⟩ ::= ⟨ident⟩ {⟨comma-ident⟩}
 static AST_list parseIdents()
 {
@@ -172,7 +177,13 @@ static AST_list parseIdents()
     return  ret;
 }
 
-// <stmt> ::= <ident> := <expr> ; | ...
+// ⟨stmt⟩ ::= ⟨ident⟩ := ⟨expr⟩
+// | begin ⟨stmt⟩ {⟨semi-stmt⟩} end
+// | if ⟨condition⟩ then ⟨stmt⟩ else ⟨stmt⟩
+// | while ⟨condition⟩ do ⟨stmt⟩
+// | read ⟨ident⟩
+// | write ⟨expr⟩
+// | skip
 AST * parseStmt()
 {
     switch(tok.typ)
@@ -294,6 +305,8 @@ static AST * parseSkipStmt()
     return ast_skip_stmt(skipt);
 }
 
+// ⟨condition⟩ ::= odd ⟨expr⟩
+// | ⟨expr⟩ ⟨rel-op⟩ ⟨expr⟩
 static AST * parseCondition()
 {
     token cond = tok;
@@ -340,13 +353,7 @@ static AST * parseCondition()
     }
 }
 
-/*
-
-
-
-*/
-
-
+// ⟨expr⟩ ::= ⟨term⟩ {⟨add-sub-term⟩}
 AST * parseExpr()
 {
     token fst = tok;
@@ -360,6 +367,8 @@ AST * parseExpr()
     return exp;
 }
 
+// ⟨add-sub-term⟩ ::= ⟨add-sub⟩ ⟨term⟩
+// ⟨add-sub⟩ ::= ⟨plus⟩ | ⟨minus⟩
 static AST * parseAddSubTerm()
 {
     token opt = tok;
@@ -386,6 +395,8 @@ static AST * parseAddSubTerm()
     return (AST *) NULL;
 }
 
+// ⟨term⟩ ::= ⟨factor⟩ {⟨mult-div-factor⟩}
+// ⟨mult-div-factor⟩ ::= ⟨mult-div⟩ ⟨factor⟩
 static AST * parseTerm()
 {
     token fst = tok;
@@ -400,8 +411,7 @@ static AST * parseTerm()
     return exp;
 }
 
-//this is setup for me to have a path to work on.
-
+// ⟨factor⟩ ::= ⟨ident⟩ | ⟨sign⟩ ⟨number⟩ | ( ⟨expr⟩ )
 static AST * parseFactor()
 {
     switch(tok.typ)
@@ -428,6 +438,7 @@ static AST * parseFactor()
     }
 }
 
+// parses solo identifier in expr
 static AST * parseIdentExpr()
 {
     token idt = tok;
@@ -435,6 +446,7 @@ static AST * parseIdentExpr()
     return ast_ident(idt, idt.text);
 }
 
+// parses solo number in expr
 static AST * parseNumberExpr(int flag)
 {
     if (flag == 0)
@@ -451,6 +463,7 @@ static AST * parseNumberExpr(int flag)
     return ast_number(numbt, val);
 }
 
+// parses possible parentheticals
 static AST * parseParenExpr()
 {
     token lpt = tok;
@@ -461,6 +474,7 @@ static AST * parseParenExpr()
     return ret;
 }
 
+// ⟨mult-div-factor⟩ ::= ⟨mult-div⟩ ⟨factor⟩
 static AST * parseMultDivFactor()
 {
     token opt = tok;

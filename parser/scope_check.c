@@ -16,6 +16,7 @@ void scope_check_program(AST * prog)
     scope_check_stmt(prog->data.program.stmt);
 }
 
+// adds a given identifier with name, kind, and file location to our current scope
 static void add_ident_to_scope(const char * name, id_kind k, file_location floc)
 {
     id_attrs * attrs = scope_lookup(name);
@@ -43,8 +44,6 @@ void scope_check_constDecl(AST *cd)
     file_location floc = cd->file_loc;
     
     add_ident_to_scope(name, 0, floc);
-    
-
 }
 
 void scope_check_varDecls(AST_list vds)
@@ -147,7 +146,6 @@ void scope_check_cond(AST * cond)
         default:
             bail_with_error("Unexpected type_tag (%d) in cond (for line %d, column %d)!",
                 cond->type_tag, cond->file_loc.line, cond->file_loc.column);
-
     }
 }
 
