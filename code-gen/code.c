@@ -1,4 +1,4 @@
-/* $Id: code.c,v 1.9 2023/03/23 08:12:28 leavens Exp leavens $ */
+/* $Id: code.c,v 1.11 2023/03/27 15:01:19 leavens Exp leavens $ */
 #include <stdlib.h>
 #include "utilities.h"
 #include "lexical_address.h"
@@ -9,7 +9,8 @@
 typedef enum {
      NOP, LIT, RTN, CAL, POP, PSI, LOD, STO, INC, JMP,
      JPC, CHO, CHI, HLT, NDB, NEG, ADD, SUB, MUL, DIV,
-     MOD, EQL, NEQ, LSS, LEQ, GTR, GEQ, PSP, PBP
+     MOD, EQL, NEQ, LSS, LEQ, GTR, GEQ, PSP, PBP, PPC,
+     JMI
 } opcode;
 
 // Return a fresh code struct, with next pointer NULL
@@ -214,6 +215,17 @@ code *code_pbp()
     return code_create(PBP, 0);
 }
 
+// push PC on top of the stack
+code *code_ppc()
+{
+    return code_create(PPC, 0);
+}
+
+// jump to the address on top of stack
+code *code_jmi()
+{
+    return code_create(JMI, 0);
+}
 
 
 // Sequence manipulation functions below

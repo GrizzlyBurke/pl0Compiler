@@ -1,4 +1,4 @@
-/* $Id: code.h,v 1.10 2023/03/23 08:12:28 leavens Exp leavens $ */
+/* $Id: code.h,v 1.11 2023/03/27 15:01:19 leavens Exp leavens $ */
 #ifndef _CODE_SEQ_H
 #define _CODE_SEQ_H
 #include <stdbool.h>
@@ -112,6 +112,13 @@ extern code *code_psp();
 
 // push BP on top of the stack
 extern code *code_pbp();
+
+// push PC on top of the stack
+extern code *code_ppc();
+
+// jump to the address on top of the stack
+extern code *code_jmi();
+
 
 
 // Sequence manipulation functions below

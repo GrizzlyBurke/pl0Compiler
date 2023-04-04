@@ -1,4 +1,4 @@
-/* $Id: machine.c,v 1.25 2023/03/23 07:25:07 leavens Exp leavens $ */
+/* $Id: machine.c,v 1.27 2023/03/27 14:10:39 leavens Exp leavens $ */
 #include <stdlib.h>
 #include <stdbool.h>
 #include <assert.h>
@@ -151,8 +151,11 @@ void execute(instruction instr)
 	PC = PC - 1 + instr.m;
 	break;
     case 10: // JPC
-	if (stack_pop() != 0) {
-	    PC = PC - 1 + instr.m;
+	{
+	    word top_elem = stack_pop();
+	    if (top_elem != 0) {
+		PC = PC - 1 + instr.m;
+	    }
 	}
 	break;
     case 11: // CHO
@@ -253,6 +256,9 @@ void execute(instruction instr)
 	break;
     case 29: // PPC
 	stack_push(PC);
+	break;
+    case 30: // JMI
+	PC = stack_pop();
 	break;
     default:
 	bail_with_error("Undefined opcode: %d", instr.op);

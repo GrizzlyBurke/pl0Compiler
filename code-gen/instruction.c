@@ -5,7 +5,7 @@
 #include "utilities.h"
 
 // one more than the highest op code, to allow for 0
-#define NUM_OPCODES 30
+#define NUM_OPCODES 31
 
 static const char *opcodes[NUM_OPCODES] =
     {"NOP", "LIT", "RTN", "CAL", "POP",
@@ -13,7 +13,8 @@ static const char *opcodes[NUM_OPCODES] =
      "JPC", "CHO", "CHI", "HLT", "NDB",
      "NEG", "ADD", "SUB", "MUL", "DIV",
      "MOD", "EQL", "NEQ", "LSS", "LEQ",
-     "GTR", "GEQ", "PSP", "PBP", "PPC"};
+     "GTR", "GEQ", "PSP", "PBP", "PPC",
+     "JMI"};
 
 // Is the argument a legal op code for the machine?
 bool legal_op_code(int op)

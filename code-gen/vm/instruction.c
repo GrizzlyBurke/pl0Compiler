@@ -1,11 +1,11 @@
-/* $Id: instruction.c,v 1.16 2023/03/21 01:39:58 leavens Exp $ */
+/* $Id: instruction.c,v 1.17 2023/03/27 14:10:39 leavens Exp leavens $ */
 #include <stdio.h>
 #include <stdbool.h>
 #include "instruction.h"
 #include "utilities.h"
 
 // one more than the highest op code, to allow for 0
-#define NUM_OPCODES 30
+#define NUM_OPCODES 31
 
 static const char *opcodes[NUM_OPCODES] =
     {"NOP", "LIT", "RTN", "CAL", "POP",
@@ -13,7 +13,8 @@ static const char *opcodes[NUM_OPCODES] =
      "JPC", "CHO", "CHI", "HLT", "NDB",
      "NEG", "ADD", "SUB", "MUL", "DIV",
      "MOD", "EQL", "NEQ", "LSS", "LEQ",
-     "GTR", "GEQ", "PSP", "PBP", "PPC"};
+     "GTR", "GEQ", "PSP", "PBP", "PPC",
+     "JMI"};
 
 // Is the argument a legal op code for the machine?
 bool legal_op_code(int op)

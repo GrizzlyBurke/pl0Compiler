@@ -11,7 +11,7 @@ Addr  OP    M
 9     LIT   10   
 10    LSS   0    
 11    JPC   2    
-12    JMP   21   
+12    JMP   20   
 13    PBP   0    
 14    PBP   0    
 15    LOD   3    
@@ -791,10 +791,10 @@ stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 97 S[4]: 106 S[5]: 10 S[6]: 0
 ==> addr: 11    JPC   2    
 PC: 12 BP: 0 SP: 6
 stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 97 S[4]: 106 S[5]: 10 
-==> addr: 12    JMP   21   
-PC: 33 BP: 0 SP: 6
+==> addr: 12    JMP   20   
+PC: 32 BP: 0 SP: 6
 stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 97 S[4]: 106 S[5]: 10 
-==> addr: 33    HLT   0    
-PC: 34 BP: 0 SP: 6
+==> addr: 32    HLT   0    
+PC: 33 BP: 0 SP: 6
 stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 97 S[4]: 106 S[5]: 10 
 bcdefghijk

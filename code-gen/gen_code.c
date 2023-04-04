@@ -1,4 +1,4 @@
-/* $Id: gen_code_stubs.c,v 1.3 2023/03/23 05:36:03 leavens Exp $ */
+/* $Id: gen_code_stubs.c,v 1.8 2023/03/29 15:42:08 leavens Exp leavens $ */
 #include "utilities.h"
 #include "gen_code.h"
 
@@ -58,7 +58,6 @@ code_seq gen_code_varDecl(AST *vd)
 }
 
 // generate code for the declarations in pds
-// and store them for later use
 void gen_code_procDecls(AST_list pds)
 {
     // Replace the following with your implementation
@@ -66,7 +65,6 @@ void gen_code_procDecls(AST_list pds)
 }
 
 // generate code for the procedure declaration pd
-// and store it for later use
 void gen_code_procDecl(AST *pd)
 {
     // Replace the following with your implementation
