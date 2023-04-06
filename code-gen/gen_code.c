@@ -12,33 +12,40 @@ void gen_code_initialize()
 // Generate code for the given AST
 code_seq gen_code_program(AST *prog)
 {
-    // Replace the following with your implementation
-    bail_with_error("gen_code_block not implemented yet!");
-    return code_seq_empty();
+    code_seq ret = code_seq_singleton(code_inc(2));
+
+    ret = gen_code_block(prog);
+
+    return ret;
 }
 
 // generate code for blk
 code_seq gen_code_block(AST *blk)
 {
-    // Replace the following with your implementation
-    bail_with_error("gen_code_block not implemented yet!");
-    return code_seq_empty();
+    code_seq ret = code_seq_concat(ret, gen_code_constDecls(blk->data.program.cds));
+    ret = code_seq_concat(ret, gen_code_varDecls(blk->data.program.vds));
+    ret = code_seq_concat(ret, gen_code_procDecls(blk->data.program.pds));
+    ret = code_seq_concat(ret, gen_code_stmt(blk->data.program.stmt));
+    return ret;
 }
 
 // generate code for the declarations in cds
 code_seq gen_code_constDecls(AST_list cds)
 {
-    // Replace the following with your implementation
-    bail_with_error("gen_code_constDecls not implemented yet!");
-    return code_seq_empty();
+    code_seq ret = code_seq_empty();
+    while (!ast_list_is_empty(cds))
+    {
+        ret = code_seq_concat(ret, gen_code_constDecl(ast_list_first(cds)));
+
+        cds = ast_list_rest(cds);
+    }
+    return ret;
 }
 
 // generate code for the const declaration cd
 code_seq gen_code_constDecl(AST *cd)
 {
-    // Replace the following with your implementation
-    bail_with_error("gen_code_constDecl not implemented yet!");
-    return code_seq_empty();
+    return code_seq_singleton(code_inc(1));
 }
 
 // generate code for the declarations in vds
