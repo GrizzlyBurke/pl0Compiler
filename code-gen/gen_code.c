@@ -51,17 +51,21 @@ code_seq gen_code_constDecl(AST *cd)
 // generate code for the declarations in vds
 code_seq gen_code_varDecls(AST_list vds)
 {
-    // Replace the following with your implementation
-    bail_with_error("gen_code_varDecls not implemented yet!");
-    return code_seq_empty();
+    code_seq ret = code_seq_empty();
+
+    while (!ast_list_is_empty(vds))
+    {
+        ret = code_seq_concat(ret, gen_code_varDecl(ast_list_first(vds)));
+        vds = ast_list_rest(vds);
+    }
+
+    return ret;
 }
 
 // generate code for the var declaration vd
 code_seq gen_code_varDecl(AST *vd)
 {
-    // Replace the following with your implementation
-    bail_with_error("gen_code_varDecl not implemented yet!");
-    return code_seq_empty();
+    return code_seq_singleton(code_inc(1));
 }
 
 // generate code for the declarations in pds
@@ -81,17 +85,51 @@ void gen_code_procDecl(AST *pd)
 // generate code for the statement
 code_seq gen_code_stmt(AST *stmt)
 {
-    // Replace the following with your implementation
-    bail_with_error("gen_code_stmt not implemented yet!");
-    return code_seq_empty();
+    switch(stmt->type_tag)
+    {
+        case assign_ast:
+            return gen_code_assignStmt(stmt);
+            break;
+        case call_ast:
+            return gen_code_callStmt(stmt);
+            break;
+        case begin_ast:
+            return gen_code_beginStmt(stmt);
+            break;
+        case if_ast:
+            return gen_code_ifStmt(stmt);
+            break;
+        case while_ast:
+            return gen_code_whileStmt(stmt);
+            break;
+        case read_ast:
+            return gen_code_readStmt(stmt);
+            break;
+        case write_ast:
+            return gen_code_writeStmt(stmt);
+            break;
+        case skip_ast:
+            return gen_code_skipStmt(stmt);
+            break;
+        default:
+            bail_with_error("Bad AST passed to gen_code_stmt!");
+	        // The following should never execute
+	        return code_seq_empty(); 
+    }
 }
 
 // generate code for the statement
 code_seq gen_code_assignStmt(AST *stmt)
 {
-    // Replace the following with your implementation
-    bail_with_error("gen_code_assignStmt not implemented yet!");
-    return code_seq_empty();
+    unsigned int outLevels = stmt->data.assign_stmt.ident->data.ident.idu->levelsOutward;
+
+    code_seq ret = code_compute_fp(outLevels);
+    ret = code_seq_concat(ret, gen_code_expr(stmt->data.assign_stmt.exp));
+
+    unsigned int offset = stmt->data.assign_stmt.ident->data.ident.idu->attrs->loc_offset;
+    ret = code_seq_add_to_end(ret, code_sto(offset));
+
+    return ret;
 }
 
 // generate code for the statement
@@ -104,9 +142,8 @@ code_seq gen_code_callStmt(AST *stmt)
 
 // generate code for the statement
 code_seq gen_code_beginStmt(AST *stmt)
-{
-    // Replace the following with your implementation
-    bail_with_error("gen_code_beginStmt not implemented yet!");
+{   
+    // statement
     return code_seq_empty();
 }
 
