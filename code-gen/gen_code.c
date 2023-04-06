@@ -24,7 +24,7 @@ code_seq gen_code_block(AST *blk)
 {
     code_seq ret = code_seq_concat(ret, gen_code_constDecls(blk->data.program.cds));
     ret = code_seq_concat(ret, gen_code_varDecls(blk->data.program.vds));
-    ret = code_seq_concat(ret, gen_code_procDecls(blk->data.program.pds));
+    //ret = code_seq_concat(ret, gen_code_procDecls(blk->data.program.pds)); // ???
     ret = code_seq_concat(ret, gen_code_stmt(blk->data.program.stmt));
     return ret;
 }
