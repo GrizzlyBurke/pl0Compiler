@@ -151,7 +151,7 @@ code_seq gen_code_beginStmt(AST *stmt)
     ret = code_seq_add_to_end(ret, code_sub());
     ret = code_seq_add_to_end(ret, code_rbp());
     // allocate any declared variables
-    AST_list vds = stmt->data.begin_stmt.stmts; // <---- Not variables
+    AST_list vds = ast_list_first(stmt->data.begin_stmt.stmts); 
     int num_vds = ast_list_size(vds);
     ret = code_seq_concat(ret, gen_code_varDecls(vds));
     // add code for all the statements
