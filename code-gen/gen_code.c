@@ -25,7 +25,7 @@ code_seq gen_code_block(AST *blk)
     code_seq ret = code_seq_concat(ret, gen_code_constDecls(blk->data.program.cds));
     ret = code_seq_concat(ret, gen_code_varDecls(blk->data.program.vds));
     //ret = code_seq_concat(ret, gen_code_procDecls(blk->data.program.pds)); // ???
-    ret = code_seq_concat(ret, gen_code_stmt(blk->data.program.stmt));
+    ret = code_seq_concat(ret, gen_code_stmt(blk->data.program.stmt)); 
     return ret;
 }
 
@@ -172,9 +172,21 @@ code_seq gen_code_beginStmt(AST *stmt)
 // generate code for the statement
 code_seq gen_code_ifStmt(AST *stmt)
 {
-    // Replace the following with your implementation
-    bail_with_error("gen_code_ifStmt not implemented yet!");
-    return code_seq_empty();
+    code_seq ret = gen_code_cond(stmt->data.if_stmt.cond);
+    code_seq_add_to_end(ret, code_jpc(2));
+
+    code_seq thenBody = gen_code_stmt(stmt->data.if_stmt.thenstmt);
+    unsigned int thenSize = code_seq_size(thenBody);
+
+    code_seq elseBody = gen_code_stmt(stmt->data.if_stmt.elsestmt);
+    unsigned int elseSize = code_seq_size(elseBody);
+
+    code_seq_add_to_end(ret, code_jpc(thenSize + 2));
+    code_seq_concat(ret, thenBody);
+    code_seq_add_to_end(ret, code_jmp(elseSize + 1));
+    code_seq_concat(ret, elseBody);
+
+    return ret;
 }
 
 // generate code for the statement
@@ -260,7 +272,5 @@ code_seq gen_code_ident_expr(AST *ident)
 // generate code for the number expression (num)
 code_seq gen_code_number_expr(AST *num)
 {
-    // Replace the following with your implementation
-    bail_with_error("gen_code_number_expr not implemented yet!");
-    return code_seq_empty();
+    return code_seq_singleton(code_lit(word2float(num->data.number.value)));
 }
