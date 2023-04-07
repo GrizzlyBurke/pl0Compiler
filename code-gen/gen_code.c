@@ -143,8 +143,30 @@ code_seq gen_code_callStmt(AST *stmt)
 // generate code for the statement
 code_seq gen_code_beginStmt(AST *stmt)
 {   
-    // statement
-    return code_seq_empty();
+    code_seq ret = code_seq_singleton(code_pbp);
+
+    // set the BP to SP-1
+    ret = code_seq_add_to_end(ret, code_psp());
+    ret = code_seq_add_to_end(ret, code_lit(1));
+    ret = code_seq_add_to_end(ret, code_sub());
+    ret = code_seq_add_to_end(ret, code_rbp());
+    // allocate any declared variables
+    AST_list vds = stmt->data.begin_stmt.stmts; // <---- Not variables
+    int num_vds = ast_list_size(vds);
+    ret = code_seq_concat(ret, gen_code_varDecls(vds));
+    // add code for all the statements
+    AST_list stmts = stmt->data.begin_stmt.stmts;
+    while (!ast_list_is_empty(stmts)) {
+	ret = code_seq_concat(ret, gen_code_stmt(ast_list_first(stmts)));
+	stmts = ast_list_rest(stmts);
+    }
+    if (num_vds > 0) {
+	// if there are variables, trim the variables
+	ret = code_seq_add_to_end(ret, code_inc(- num_vds));
+    }
+    // restore the old BP
+    ret = code_seq_add_to_end(ret, code_rbp());
+    return ret;
 }
 
 // generate code for the statement
