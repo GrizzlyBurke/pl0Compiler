@@ -14,8 +14,8 @@ code_seq gen_code_program(AST *prog)
 {
     code_seq ret = code_seq_singleton(code_inc(2));
 
-    ret = code_seq_concat(ret, gen_code_varDecls(prog->data.program.vds));
-    ret = code_seq_concat(ret, gen_code_stmt(prog->data.program.stmt));
+    ret = code_seq_concat(ret, gen_code_block(prog));
+
     ret = code_seq_add_to_end(ret, code_hlt());
 
     return ret;
@@ -24,7 +24,7 @@ code_seq gen_code_program(AST *prog)
 // generate code for blk
 code_seq gen_code_block(AST *blk)
 {
-    code_seq ret = code_seq_concat(ret, gen_code_constDecls(blk->data.program.cds));
+    code_seq ret = code_seq_singleton(gen_code_constDecls(blk->data.program.cds));
     ret = code_seq_concat(ret, gen_code_varDecls(blk->data.program.vds));
     //ret = code_seq_concat(ret, gen_code_procDecls(blk->data.program.pds)); // ???
     ret = code_seq_concat(ret, gen_code_stmt(blk->data.program.stmt)); 
