@@ -6,7 +6,7 @@
 void gen_code_initialize()
 {
     // Replace the following with your implementation
-    bail_with_error("gen_code_initialize not implemented yet!");
+    //bail_with_error("gen_code_initialize not implemented yet!");
 }
 
 // Generate code for the given AST
@@ -233,6 +233,7 @@ code_seq gen_code_readStmt(AST *stmt)
 code_seq gen_code_writeStmt(AST *stmt)
 {
     code_seq ret = gen_code_expr(stmt->data.write_stmt.exp);
+    ret = code_seq_add_to_end(ret, code_cho());
 }
 
 // generate code for the statement
