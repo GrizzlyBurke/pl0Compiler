@@ -12,7 +12,7 @@ void gen_code_initialize()
 // Generate code for the given AST
 code_seq gen_code_program(AST *prog)
 {
-    code_seq ret = code_seq_singleton(code_inc(2));
+    code_seq ret = code_seq_singleton(code_inc(3));
 
     ret = code_seq_concat(ret, gen_code_block(prog));
 
