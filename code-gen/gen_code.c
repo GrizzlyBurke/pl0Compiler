@@ -149,7 +149,7 @@ code_seq gen_code_beginStmt(AST *stmt)
     ret = code_seq_add_to_end(ret, code_psp());
     ret = code_seq_add_to_end(ret, code_lit(1));
     ret = code_seq_add_to_end(ret, code_sub());
-    ret = code_seq_add_to_end(ret, code_rbp());
+    ret = code_seq_add_to_end(ret, code_rtn());
     // allocate any declared variables
     AST_list vds = ast_list_first(stmt->data.begin_stmt.stmts); 
     int num_vds = ast_list_size(vds);
@@ -165,7 +165,7 @@ code_seq gen_code_beginStmt(AST *stmt)
 	ret = code_seq_add_to_end(ret, code_inc(- num_vds));
     }
     // restore the old BP
-    ret = code_seq_add_to_end(ret, code_rbp());
+    ret = code_seq_add_to_end(ret, code_rtn());
     return ret;
 }
 
@@ -220,7 +220,7 @@ code_seq gen_code_whileStmt(AST *stmt)
 code_seq gen_code_readStmt(AST *stmt)
 {
     id_use *idu = stmt->data.read_stmt.ident->data.ident.idu;
-    code_seq ret = code_code_compute_fp(idu->levelsOutward);
+    code_seq ret = code_compute_fp(idu->levelsOutward);
     ret = code_seq_add_to_end(ret, code_chi());
     ret = code_seq_add_to_end(ret, code_sto(idu->attrs->loc_offset));
 
@@ -265,7 +265,7 @@ code_seq gen_code_odd_cond(AST *cond)
     // expr to stack
     // mod
 
-    code_seq ret = code_gen_expr(cond->data.odd_cond.exp);
+    code_seq ret = gen_code_expr(cond->data.odd_cond.exp);
     code_seq_concat(ret, code_mod());
 
     return ret;
@@ -371,5 +371,5 @@ code_seq gen_code_ident_expr(AST *ident)
 // generate code for the number expression (num)
 code_seq gen_code_number_expr(AST *num)
 {
-    return code_seq_singleton(code_lit(word2float(num->data.number.value)));
+    return code_seq_singleton(code_lit(num->data.number.value));
 }
