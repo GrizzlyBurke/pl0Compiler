@@ -14,7 +14,7 @@ code_seq gen_code_program(AST *prog)
 {
     code_seq ret = code_seq_singleton(code_inc(2));
 
-    ret = gen_code_block(prog);
+    ret = code_seq_add_to_end(ret, gen_code_block(prog));
 
     return ret;
 }
