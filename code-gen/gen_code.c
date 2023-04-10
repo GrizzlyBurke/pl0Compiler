@@ -14,7 +14,9 @@ code_seq gen_code_program(AST *prog)
 {
     code_seq ret = code_seq_singleton(code_inc(2));
 
-    ret = code_seq_add_to_end(ret, gen_code_block(prog));
+    ret = code_seq_concat(ret, gen_code_varDecl(prog->data.program.vds));
+    ret = code_seq_concat(ret, gen_code_stmt(prog->data.program.stmt));
+    ret = code_seq_add_to_end(ret, code_hlt());
 
     return ret;
 }
