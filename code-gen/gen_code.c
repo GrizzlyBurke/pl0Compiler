@@ -254,12 +254,7 @@ code_seq gen_code_odd_cond(AST *cond)
     // expr to stack
     // mod
     code_seq ret = gen_code_expr(cond->data.odd_cond.exp);
-<<<<<<< HEAD
     ret = code_seq_concat(ret, code_mod());
-=======
-    
-    code_seq_concat(ret, code_mod());
->>>>>>> 05c37f8e52093fb62eceea4170794c5d6b1c929f
 
     return ret;
 }
