@@ -7,7 +7,7 @@ Addr  OP    M
 5     LIT   86   
 6     GTR   0    
 7     JPC   2    
-8     JPC   5    
+8     JMP   5    
 9     PBP   0    
 10    LOD   3    
 11    CHO   0    
