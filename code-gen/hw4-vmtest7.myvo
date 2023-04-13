@@ -3,24 +3,22 @@ Addr  OP    M
 1     LIT   89   
 2     LIT   78   
 3     LIT   10   
-4     INC   1    
-5     INC   1    
-6     LIT   99   
-7     LIT   86   
-8     GTR   0    
-9     JPC   2    
-10    JPC   5    
-11    PBP   0    
-12    LOD   3    
-13    CHO   0    
-14    JMP   4    
-15    PBP   0    
-16    LOD   4    
-17    CHO   0    
-18    PBP   0    
-19    LOD   5    
-20    CHO   0    
-21    HLT   0    
+4     LIT   99   
+5     LIT   86   
+6     GTR   0    
+7     JPC   2    
+8     JPC   5    
+9     PBP   0    
+10    LOD   3    
+11    CHO   0    
+12    JMP   4    
+13    PBP   0    
+14    LOD   4    
+15    CHO   0    
+16    PBP   0    
+17    LOD   5    
+18    CHO   0    
+19    HLT   0    
 Tracing ...
 PC: 0 BP: 0 SP: 0
 stack: 
@@ -36,46 +34,40 @@ stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78
 ==> addr: 3     LIT   10   
 PC: 4 BP: 0 SP: 6
 stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 
-==> addr: 4     INC   1    
+==> addr: 4     LIT   99   
 PC: 5 BP: 0 SP: 7
-stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 S[6]: 0 
-==> addr: 5     INC   1    
+stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 S[6]: 99 
+==> addr: 5     LIT   86   
 PC: 6 BP: 0 SP: 8
-stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 S[6]: 0 S[7]: 0 
-==> addr: 6     LIT   99   
-PC: 7 BP: 0 SP: 9
-stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 S[6]: 0 S[7]: 0 S[8]: 99 
-==> addr: 7     LIT   86   
-PC: 8 BP: 0 SP: 10
-stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 S[6]: 0 S[7]: 0 S[8]: 99 S[9]: 86 
-==> addr: 8     GTR   0    
-PC: 9 BP: 0 SP: 9
-stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 S[6]: 0 S[7]: 0 S[8]: 1 
-==> addr: 9     JPC   2    
-PC: 11 BP: 0 SP: 8
-stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 S[6]: 0 S[7]: 0 
-==> addr: 11    PBP   0    
-PC: 12 BP: 0 SP: 9
-stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 S[6]: 0 S[7]: 0 S[8]: 0 
-==> addr: 12    LOD   3    
-PC: 13 BP: 0 SP: 9
-stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 S[6]: 0 S[7]: 0 S[8]: 89 
-==> addr: 13    CHO   0    
-PC: 14 BP: 0 SP: 8
-stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 S[6]: 0 S[7]: 0 
-==> addr: 14    JMP   4    
-PC: 18 BP: 0 SP: 8
-stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 S[6]: 0 S[7]: 0 
-==> addr: 18    PBP   0    
-PC: 19 BP: 0 SP: 9
-stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 S[6]: 0 S[7]: 0 S[8]: 0 
-==> addr: 19    LOD   5    
-PC: 20 BP: 0 SP: 9
-stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 S[6]: 0 S[7]: 0 S[8]: 10 
-==> addr: 20    CHO   0    
-PC: 21 BP: 0 SP: 8
-stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 S[6]: 0 S[7]: 0 
-==> addr: 21    HLT   0    
-PC: 22 BP: 0 SP: 8
-stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 S[6]: 0 S[7]: 0 
+stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 S[6]: 99 S[7]: 86 
+==> addr: 6     GTR   0    
+PC: 7 BP: 0 SP: 7
+stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 S[6]: 1 
+==> addr: 7     JPC   2    
+PC: 9 BP: 0 SP: 6
+stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 
+==> addr: 9     PBP   0    
+PC: 10 BP: 0 SP: 7
+stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 S[6]: 0 
+==> addr: 10    LOD   3    
+PC: 11 BP: 0 SP: 7
+stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 S[6]: 89 
+==> addr: 11    CHO   0    
+PC: 12 BP: 0 SP: 6
+stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 
+==> addr: 12    JMP   4    
+PC: 16 BP: 0 SP: 6
+stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 
+==> addr: 16    PBP   0    
+PC: 17 BP: 0 SP: 7
+stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 S[6]: 0 
+==> addr: 17    LOD   5    
+PC: 18 BP: 0 SP: 7
+stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 S[6]: 10 
+==> addr: 18    CHO   0    
+PC: 19 BP: 0 SP: 6
+stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 
+==> addr: 19    HLT   0    
+PC: 20 BP: 0 SP: 6
+stack: S[0]: 0 S[1]: 0 S[2]: 0 S[3]: 89 S[4]: 78 S[5]: 10 
 Y
