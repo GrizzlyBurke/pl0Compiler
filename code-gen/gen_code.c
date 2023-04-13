@@ -2,6 +2,17 @@
 #include "utilities.h"
 #include "gen_code.h"
 
+typedef struct procCode
+{
+    int address;
+    char * name;
+    code_seq block;
+    struct procCode * next;
+}procCode;
+
+int currentAdr = 1;
+procCode * head = NULL;
+
 // Initialize the code generator
 void gen_code_initialize()
 {
@@ -26,7 +37,7 @@ code_seq gen_code_block(AST *blk)
 {
     code_seq ret = code_seq_singleton(gen_code_constDecls(blk->data.program.cds));
     ret = code_seq_concat(ret, gen_code_varDecls(blk->data.program.vds));
-    // ret = code_seq_concat(ret, gen_code_procDecls(blk->data.program.pds)); // ???
+    gen_code_procDecls(blk->data.program.pds);
     ret = code_seq_concat(ret, gen_code_stmt(blk->data.program.stmt));
     return ret;
 }
@@ -73,15 +84,44 @@ code_seq gen_code_varDecl(AST *vd)
 // generate code for the declarations in pds
 void gen_code_procDecls(AST_list pds)
 {
-    // Replace the following with your implementation
-    bail_with_error("gen_code_procDecls not implemented yet!");
+    
+    while(!ast_list_is_empty(pds))
+    {
+        gen_code_procDecl(ast_list_first(pds));
+        pds = ast_list_rest(pds);
+    }
 }
 
 // generate code for the procedure declaration pd
 void gen_code_procDecl(AST *pd)
 {
-    // Replace the following with your implementation
-    bail_with_error("gen_code_procDecl not implemented yet!");
+    /*
+    procCode * temp = malloc(sizeof(procCode));
+
+    temp->block = (gen_code_block(pd));
+    temp->address = currentAdr;
+    temp->name = pd->data.proc_decl.name;
+    temp->next = NULL;
+
+    if ( head == NULL)
+    {
+        head = temp;
+    }
+    else
+    {
+        procCode * t = head;
+        while ( t->next != NULL)
+        {
+            t = t->next;
+        }
+
+        t->next = temp;
+    }
+
+    currentAdr += code_seq_size(temp->block);
+    */
+
+    
 }
 
 // generate code for the statement
