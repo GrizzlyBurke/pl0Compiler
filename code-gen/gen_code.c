@@ -47,7 +47,7 @@ code_seq gen_code_constDecls(AST_list cds)
 // generate code for the const declaration cd
 code_seq gen_code_constDecl(AST *cd)
 {
-    return code_seq_singleton(code_inc(1));
+    return code_seq_singleton(code_lit(cd->data.const_decl.num_val));
 }
 
 // generate code for the declarations in vds
@@ -145,13 +145,8 @@ code_seq gen_code_callStmt(AST *stmt)
 // generate code for the statement
 code_seq gen_code_beginStmt(AST *stmt)
 {   
-    code_seq ret = code_seq_singleton(code_pbp);
+    code_seq ret = code_seq_empty();
 
-    // set the BP to SP-1
-    ret = code_seq_add_to_end(ret, code_psp());
-    ret = code_seq_add_to_end(ret, code_lit(1));
-    ret = code_seq_add_to_end(ret, code_sub());
-    ret = code_seq_add_to_end(ret, code_rtn());
     // allocate any declared variables
     AST_list vds = ast_list_first(stmt->data.begin_stmt.stmts); 
     int num_vds = ast_list_size(vds);
@@ -162,12 +157,6 @@ code_seq gen_code_beginStmt(AST *stmt)
 	ret = code_seq_concat(ret, gen_code_stmt(ast_list_first(stmts)));
 	stmts = ast_list_rest(stmts);
     }
-    if (num_vds > 0) {
-	// if there are variables, trim the variables
-	ret = code_seq_add_to_end(ret, code_inc(- num_vds));
-    }
-    // restore the old BP
-    ret = code_seq_add_to_end(ret, code_rtn());
     return ret;
 }
 
