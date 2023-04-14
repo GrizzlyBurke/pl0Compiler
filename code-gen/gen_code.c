@@ -4,14 +4,13 @@
 
 typedef struct procCode
 {
-    int address; //Starting address of the procedure
     char * name; //Procedure name
     code_seq block; //Code sequence for the procedure
     label * proc_label; //Pointer to the label generated for the procedure
     struct procCode * next;
 }procCode;
 
-int currentAdr = 1;
+address currentAdr = 1;
 procCode * head = NULL;
 
 // Initialize the code generator
@@ -100,8 +99,9 @@ void gen_code_procDecl(AST *pd)
     procCode * temp = malloc(sizeof(procCode));
 
     temp->block = (gen_code_block(pd));
-    temp->address = currentAdr + code_seq_size();
-    temp->name = id_attrs_proc_create();
+    temp->name = pd->data.proc_decl.name;
+    temp->proc_label = label_create();
+    label_set(temp->proc_label, currentAdr);
     temp->next = NULL;
 
     if ( head == NULL)
@@ -119,10 +119,7 @@ void gen_code_procDecl(AST *pd)
         t->next = temp;
     }
 
-    currentAdr += code_seq_size(temp->block);
-    
-
-    
+    currentAdr += code_seq_size(temp->block);    
 }
 
 // generate code for the statement
