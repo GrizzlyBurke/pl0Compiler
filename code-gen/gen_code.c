@@ -108,7 +108,9 @@ void gen_code_procDecl(AST *pd)
     currentAdr += size;
     pd->data.proc_decl.lab = currentAdr;
     code_seq_fix_labels(pd->data.proc_decl.block);
-    procDecls = code_seq_concat(procDecls, code_inc(????));
+    int cvSize = ast_list_size(pd->data.proc_decl.block->data.program.cds) + 
+                 ast_list_size(pd->data.proc_decl.block->data.program.vds);
+    procDecls = code_seq_concat(procDecls, code_inc(-cvSize));
 }
 
 // generate code for the statement
