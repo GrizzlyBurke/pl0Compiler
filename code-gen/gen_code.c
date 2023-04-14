@@ -100,8 +100,9 @@ void gen_code_procDecl(AST *pd)
 
     temp->block = (gen_code_block(pd));
     temp->name = pd->data.proc_decl.name;
-    temp->proc_label = label_create();
+    temp->proc_label = label_create();  
     label_set(temp->proc_label, currentAdr);
+    code_seq_fix_labels(temp->block);
     temp->next = NULL;
 
     if ( head == NULL)
