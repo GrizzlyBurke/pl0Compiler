@@ -2,16 +2,8 @@
 #include "utilities.h"
 #include "gen_code.h"
 
-typedef struct procCode
-{
-    char * name; //Procedure name
-    code_seq block; //Code sequence for the procedure
-    label * proc_label; //Pointer to the label generated for the procedure
-    struct procCode * next;
-}procCode;
-
 address currentAdr = 1;
-procCode * head = NULL;
+code_seq procDecls;
 
 // Initialize the code generator
 void gen_code_initialize()
@@ -25,9 +17,13 @@ code_seq gen_code_program(AST *prog)
 {   
     code_seq ret = code_seq_singleton(code_inc(3));
 
+    
+
     ret = code_seq_concat(ret, gen_code_block(prog));
 
     ret = code_seq_add_to_end(ret, code_hlt());
+
+    
 
     return ret;
 }
@@ -35,10 +31,21 @@ code_seq gen_code_program(AST *prog)
 // generate code for blk
 code_seq gen_code_block(AST *blk)
 {
-    code_seq ret = code_seq_singleton(gen_code_constDecls(blk->data.program.cds));
-    ret = code_seq_concat(ret, gen_code_varDecls(blk->data.program.vds));
     gen_code_procDecls(blk->data.program.pds);
+
+    code_seq ret = code_seq_empty();
+    if(code_seq_size(procDecls) != 0)
+    {
+        ret = code_seq_singleton(code_jmp(code_seq_size(procDecls)));
+        ret = code_seq_concat(ret, procDecls);
+    }
+    
+    ret = code_seq_concat(ret, gen_code_constDecls(blk->data.program.cds));
+    ret = code_seq_concat(ret, gen_code_varDecls(blk->data.program.vds));
     ret = code_seq_concat(ret, gen_code_stmt(blk->data.program.stmt));
+
+    
+    
     return ret;
 }
 
@@ -84,6 +91,8 @@ code_seq gen_code_varDecl(AST *vd)
 // generate code for the declarations in pds
 void gen_code_procDecls(AST_list pds)
 {
+    procDecls = code_seq_empty();
+
     while(!ast_list_is_empty(pds))
     {
         gen_code_procDecl(ast_list_first(pds));
@@ -94,30 +103,12 @@ void gen_code_procDecls(AST_list pds)
 // generate code for the procedure declaration pd
 void gen_code_procDecl(AST *pd)
 {
-    
-    procCode * temp = malloc(sizeof(procCode));
-
-    temp->block = (gen_code_block(pd));
-    strcpy(temp->name, pd->data.proc_decl.name);
-    label_set(temp->proc_label, currentAdr);  
-    temp->next = NULL;
-
-    if ( head == NULL)
-    {
-        head = temp;
-    }
-    else
-    {
-        procCode * t = head;
-        while ( t->next != NULL)
-        {
-            t = t->next;
-        }
-
-        t->next = temp;
-    }
-
-    currentAdr += code_seq_size(temp->block);    
+    procDecls = code_seq_concat(procDecls, gen_code_block(pd->data.proc_decl.block));
+    int size = code_seq_size(procDecls);
+    currentAdr += size;
+    pd->data.proc_decl.lab = currentAdr;
+    code_seq_fix_labels(pd->data.proc_decl.block);
+    procDecls = code_seq_concat(procDecls, code_inc(????));
 }
 
 // generate code for the statement
@@ -174,11 +165,9 @@ code_seq gen_code_assignStmt(AST *stmt)
 code_seq gen_code_callStmt(AST *stmt)
 {
     // Replace the following with your implementation
-    code_seq ret = code_seq_empty();
+    code_seq ret = code_seq_singleton(code_cal(stmt->data.call_stmt.ident));
+    return ret;
 
-    
-    
-    
 }
 
 // generate code for the statement
