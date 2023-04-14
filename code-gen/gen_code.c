@@ -84,7 +84,6 @@ code_seq gen_code_varDecl(AST *vd)
 // generate code for the declarations in pds
 void gen_code_procDecls(AST_list pds)
 {
-    
     while(!ast_list_is_empty(pds))
     {
         gen_code_procDecl(ast_list_first(pds));
@@ -100,9 +99,7 @@ void gen_code_procDecl(AST *pd)
 
     temp->block = (gen_code_block(pd));
     temp->name = pd->data.proc_decl.name;
-    temp->proc_label = label_create();  
-    label_set(temp->proc_label, currentAdr);
-    code_seq_fix_labels(temp->block);
+    label_set(temp->proc_label, currentAdr);  
     temp->next = NULL;
 
     if ( head == NULL)
