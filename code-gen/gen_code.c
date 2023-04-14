@@ -166,7 +166,7 @@ code_seq gen_code_assignStmt(AST *stmt)
 // generate code for the statement
 code_seq gen_code_callStmt(AST *stmt)
 {
-    // Replace the following with your implementation
+    // Unable
     code_seq ret = code_seq_singleton(code_cal(label_read(stmt->data.call_stmt.ident)));
     return ret;
 
