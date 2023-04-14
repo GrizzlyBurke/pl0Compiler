@@ -22,7 +22,7 @@ void gen_code_initialize()
 
 // Generate code for the given AST
 code_seq gen_code_program(AST *prog)
-{
+{   
     code_seq ret = code_seq_singleton(code_inc(3));
 
     ret = code_seq_concat(ret, gen_code_block(prog));
@@ -98,7 +98,7 @@ void gen_code_procDecl(AST *pd)
     procCode * temp = malloc(sizeof(procCode));
 
     temp->block = (gen_code_block(pd));
-    temp->name = pd->data.proc_decl.name;
+    strcpy(temp->name, pd->data.proc_decl.name);
     label_set(temp->proc_label, currentAdr);  
     temp->next = NULL;
 
@@ -174,8 +174,10 @@ code_seq gen_code_assignStmt(AST *stmt)
 code_seq gen_code_callStmt(AST *stmt)
 {
     // Replace the following with your implementation
-    bail_with_error("gen_code_callStmt not implemented yet!");
-    return code_seq_empty();
+    code_seq ret = code_seq_empty();
+
+    
+    
 }
 
 // generate code for the statement
