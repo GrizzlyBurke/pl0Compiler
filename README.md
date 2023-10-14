@@ -1,4 +1,4 @@
-# systems-software (pl0 Compiler)
+# pl0Compiler
 
 This repo contains code from UCF's 2022 System Software course with Dr. Gary Leavens.
 
